@@ -1,2 +1,43 @@
-venv
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.sqlite3
+*.log
+db.sqlite3
+
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# sphinx docs 
+_build
+_static
+_templates
+
+# javascript
+package-lock.json
+.vscode/symbols.json
+
+
+.vim
+coc-settings.json
+.vscode
+*.code-workspace
+
+# macOS
+.DS_Store
