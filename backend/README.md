@@ -34,17 +34,24 @@ Luego:
 docker-compose backend bash
 ```
 
-por ultimo:
+dentro del contenedor:
 
 ```
 ./startup.sh
 ```
 
-Acceder a:
+Si todo salió bien, se puede acceder a la documentación de la api:
 
 ```
-http://192.168.100.10:8000/docs
+http://localhost:8000/docs
 ```
+
+Y también visualizar y modificar la base de datos median pgAdmin (ingresando las credenciales definidas en el archivo `.env` para las variables de entorno `PGADMIN_DEFAULT_EMAIL` y `PGADMIN_DEFAULT_PASSWORD` respectivamente):
+
+```
+http://localhost:5050
+```
+
 
 ## Sección para desarrolladores del backend
 

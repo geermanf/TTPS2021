@@ -1,15 +1,12 @@
 version: "3.5"
+
 services:
   backend:
-    ports:
-      - "8888:8888"
     volumes:
       - ./.env:/.env
       - ./backend/startup.sh:/startup.sh
       - ./backend/app:/app
       - ./backend/alembic:/alembic
-    environment:
-      - SERVER_HOST=http://localhost
     build:
       context: ./backend
       dockerfile: backend.dockerfile
