@@ -6,13 +6,11 @@ services:
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - postgres::/var/lib/postgresql/data/pgdata
+      - postgres:/var/lib/postgresql/data/pgdata
     env_file:
       - .env
     ports:
       - "5432:5432"
-    networks:
-      - postgres
     restart: unless-stopped
 
   pgadmin:
@@ -23,35 +21,31 @@ services:
     volumes:
        - pgadmin:/var/lib/pgadmin
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - postgres
+      - "${PGADMIN_PORT:-5050}:5050"
     depends_on:
+      - db
+    links:
       - db
     restart: unless-stopped
   
   backend:
     container_name: fastapi_backend
     ports:
-      - "8888:8888"
-    volumes: # Only in test/development mode
-      - ./backend/app:/app
+      - "8000:8000"
+    depends_on:
+      - db
     env_file:
       - .env
-    environment:
-      - SERVER_NAME=${DOMAIN?Variable not set}
+    #environment:
+      #- SERVER_NAME=${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
-      - SMTP_HOST=${SMTP_HOST}
+      #- SMTP_HOST=${SMTP_HOST}
     build:
       context: ./backend
       dockerfile: backend.dockerfile
       args:
-        INSTALL_DEV: ${INSTALL_DEV-true}
-    command: /app/startup.sh
-
-networks:
-  postgres:
-    driver: bridge
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    command: ./startup.sh
 
 volumes:
     postgres:
