@@ -34,16 +34,16 @@ Luego:
 docker-compose backend bash
 ```
 
-por ultimo:
+dentro del contenedor:
 
 ```
 ./startup.sh
 ```
 
-Acceder a:
+Por último, acceder a:
 
 ```
-http://192.168.100.10:8000/docs
+http://localhost:8000/docs
 ```
 
 ## Sección para desarrolladores del backend
