@@ -8,6 +8,25 @@ from app.db.base_class import Base
 
 from .user import InformantDoctor, Patient
 
+from enum import Enum
+
+from sqlalchemy_utils import ChoiceType
+
+
+class StudyState(Enum):
+    state_one = "esperando_comprobante"
+    state_one_error = "anulado_falta_pago"
+    state_two = "enviar_consentimiento"
+    state_three = "esperando_consentimiento_firmado"
+    state_four = "esperando_seleccion_turno"
+    state_five = "esperando_toma_muestra"
+    state_six = "esperando_retirno_muestra"
+    state_seven = "esperando_ingresar_a_lote"
+    state_eight = "esperando_resultado"
+    state_nine = "esperando_interpretacion"
+    state_ten = "esperando_enviar_a_derivante"
+    state_ended = "resultado_emtregado"
+
 
 class Study(Base):
     id = Column(Integer, primary_key=True, index=True)
@@ -20,4 +39,4 @@ class Study(Base):
     patient = relationship(Patient, primaryjoin=patient_id ==
                            Patient.id, back_populates="studies")
     report = Column(Text)
-    status = Column(String(20))
+    state = Column(ChoiceType(StudyState, impl=String()))

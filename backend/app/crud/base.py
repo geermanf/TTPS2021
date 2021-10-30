@@ -6,7 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.db.base_class import Base
 
+# -Explanation of "bound": ModelType must be a subclass of Base,
+# that is, Base acts as upper bound of ModelType
+# -With TypeVar, ModelType can be any type, as long as the above is true
+
 ModelType = TypeVar("ModelType", bound=Base)
+
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
