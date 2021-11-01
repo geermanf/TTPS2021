@@ -7,30 +7,26 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     is_active: Optional[bool] = True
     username: Optional[str]
-    #type: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
 
 
 class AdminBase(UserBase):
-    type: str = 'admin'
+    pass
 
 
 class ConfigBase(UserBase):
-    type: str
+    pass
 
 
 class EmployeeBase(UserBase):
-    #type: str = 'employee' #TODO: evaluar si el tipo de usuario deberia ser modificable, y aplicarlo en todos los esquemas
     pass
 
 class InformantBase(UserBase):
-    type: str = 'informant_doctor'
     license: Optional[int]
 
 
 class PatientBase(UserBase):
-    type: str = 'patient'
     email: Optional[EmailStr]
     dni: Optional[str]
     birth_date: Optional[str]
@@ -53,6 +49,7 @@ class EmployeeCreate(EmployeeBase):
 
 
 class InformantCreate(InformantBase):
+    license: int
     password: str
 
 

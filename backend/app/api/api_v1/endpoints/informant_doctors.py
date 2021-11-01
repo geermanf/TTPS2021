@@ -13,35 +13,37 @@ from app.api import deps
 from app.core.config import settings
 from app.utils import send_new_account_email
 
+from fastapi import APIRouter
+
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Employee])
-def read_employees(
+@router.get("/", response_model=List[schemas.InformantDoctor])
+def read_informant_doctors(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Retrieve employees.
+    Retrieve informant doctors.
     """
-    employees = crud.employee.get_multi(db, skip=skip, limit=limit)
-    return employees
+    informants = crud.informant_doctor.get_multi(db, skip=skip, limit=limit)
+    return informants
 
 
-@router.post("/", response_model=schemas.Employee)
-def create_employee(
+@router.post("/", response_model=schemas.InformantDoctor)
+def create_informant_doctor(
     *,
     db: Session = Depends(deps.get_db),
-    employee_in: schemas.EmployeeCreate,
+    informant_in: schemas.InformantCreate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Create new employee.
+    Create new informant doctor.
     """
     try:
-        employee = crud.employee.create(db, obj_in=employee_in)
+        informant = crud.informant.create(db, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
@@ -52,45 +54,46 @@ def create_employee(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
         )
-    if settings.EMAILS_ENABLED and employee_in.email:
+    if settings.EMAILS_ENABLED and informant_in.email:
         send_new_account_email(
-            email_to=employee_in.email, username=employee_in.username, password=employee_in.password
+            email_to=informant_in.email, username=informant_in.username, password=informant_in.password
         )
-    return employee
+    return informant
 
 
-@router.get("/{employee_id}", response_model=schemas.Employee)
-def read_employee_by_id(
-    employee_id: int,
+@router.get("/{informant_id}", response_model=schemas.InformantDoctor)
+def read_informant_doctor_by_id(
+    informant_id: int,
     current_user: models.User = Depends(deps.get_current_active_user),
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
-    Get a specific employee by id.
+    Get a specific informant by id.
     """
-    employee = crud.employee.get(db, id=employee_id)
-    if employee == current_user:
-        return employee
+    informant = crud.informant_doctor.get(db, id=informant_id)
+    if informant == current_user:
+        return informant
     if not crud.user.is_admin(current_user):
         raise HTTPException(
-            status_code=400, detail="The employee doesn't have enough privileges"
+            status_code=400, detail="The current user doesn't have enough privileges"
         )
-    return employee
+    return informant
 
 
-@router.put("/{employee_id}", response_model=schemas.Employee) #TODO: validar que el username no corresponda a otro
-def update_employee(
+@router.put("/{informant_id}", response_model=schemas.InformantDoctor)
+def update_informant_doctor(
     *,
     db: Session = Depends(deps.get_db),
-    employee_id: int,
-    employee_in: schemas.EmployeeUpdate,
+    informant_id: int,
+    informant_in: schemas.InformantUpdate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Update an employee.
+    Update an informant doctor.
     """
     try:
-        employee = crud.employee.update(db, db_obj=employee, obj_in=employee_in)
+        informant = crud.informant_doctor.update(
+            db, db_obj=informant, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
@@ -101,4 +104,4 @@ def update_employee(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
         )
-    return employee
+    return informant
