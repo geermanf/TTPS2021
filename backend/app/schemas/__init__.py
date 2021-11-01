@@ -8,4 +8,5 @@ from .user import (
     Patient, PatientCreate, PatientInDB, PatientUpdate
 )
 from .health_insurance import HealthInsurance, HealthInsuranceCreate, HealthInsuranceInDB, HealthInsuranceUpdate
-from .study import Study, StudyCreate, StudyInDB, StudyUpdate # incompleto
+from .study import Study, StudyCreate, StudyInDB, StudyUpdate, TypeStudyCreate, TypeStudyUpdate, TypeStudy  # incompleto
+from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate

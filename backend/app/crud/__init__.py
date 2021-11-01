@@ -1,5 +1,7 @@
 from .crud_user import admin, user, employee, patient
 from .study import study
+from .crud_referring_physician import referring_physician
+from .crud_type_study import type_study
 
 # For a new basic set of CRUD operations you could just do
 

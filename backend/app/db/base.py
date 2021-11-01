@@ -2,5 +2,6 @@
 # imported by Alembic
 from app.db.base_class import Base  # noqa
 from app.models.user import User, InformantDoctor, Patient, Employee  # noqa
-from app.models.study import Study # noqa
+from app.models.study import Study, TypeStudy # noqa
 from app.models.health_insurance import HealthInsurance # noqa
+from app.models.referring_physician import ReferringPhysician  # noqa

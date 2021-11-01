@@ -37,3 +37,29 @@ class Study(StudyInDBBase):
 # Properties properties stored in DB
 class StudyInDB(StudyInDBBase):
     pass
+
+
+class TypeStudyBase(BaseModel):
+    name: Optional[str] = None
+    study_consent_template: Optional[str] = None
+
+
+class TypeStudyInDBBase(TypeStudyBase):
+    class Config:
+        orm_mode = True
+
+
+class TypeStudyCreate(TypeStudyBase):
+    name: str
+    study_consent_template: str
+
+
+class TypeStudyUpdate(TypeStudyBase):
+    name: str
+    study_consent_template: str
+
+
+class TypeStudy(TypeStudyInDBBase):
+    pass
+
+
