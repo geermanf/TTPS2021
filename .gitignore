@@ -42,7 +42,7 @@ coc-settings.json
 # macOS
 .DS_Store
 
-#Pycharm
+# Pycharm
 .idea
 
 # Custon docker compose
