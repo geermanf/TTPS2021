@@ -40,6 +40,11 @@ class Study(Base):
     id = Column(Integer, primary_key=True, index=True)
     result = Column(Boolean(), default=True)  # dudaa, capaz string
 
+    informant_doctor_id = Column(Integer, ForeignKey(InformantDoctor.id))
+    informant_doctor = relationship(InformantDoctor, primaryjoin=informant_doctor_id ==
+                                    InformantDoctor.id, back_populates="studies_informed")
+    patient_id = Column(Integer, ForeignKey(Patient.id))
+
     date_report = Column(Date())
     created_date = Column(Date(), default=func.now())
 
@@ -47,7 +52,7 @@ class Study(Base):
 
     referring_physician_id = Column(Integer, ForeignKey(ReferringPhysician.id))
     referring_physician = relationship(ReferringPhysician, primaryjoin=referring_physician_id ==
-                                                                 ReferringPhysician.id, back_populates="studies_informed")
+                                                                 ReferringPhysician.id, back_populates="studies_referred")
 
     patient_id = Column(Integer, ForeignKey(Patient.id))
     patient = relationship(Patient, primaryjoin=patient_id ==

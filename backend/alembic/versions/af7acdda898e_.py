@@ -1,8 +1,8 @@
-"""first commit
+"""empty message
 
-Revision ID: 042342db64c4
+Revision ID: af7acdda898e
 Revises: 
-Create Date: 2021-10-30 08:31:20.743282
+Create Date: 2021-11-01 02:16:06.372666
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 from app.models import StudyState
 
 # revision identifiers, used by Alembic.
-revision = '042342db64c4'
+revision = 'af7acdda898e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,6 +30,28 @@ def upgrade():
     op.create_index(op.f('ix_healthinsurance_id'), 'healthinsurance', ['id'], unique=False)
     op.create_index(op.f('ix_healthinsurance_name'), 'healthinsurance', ['name'], unique=False)
     op.create_index(op.f('ix_healthinsurance_telephone'), 'healthinsurance', ['telephone'], unique=False)
+    op.create_table('referringphysician',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('first_name', sa.String(), nullable=False),
+    sa.Column('last_name', sa.String(), nullable=False),
+    sa.Column('licence', sa.Integer(), nullable=False),
+    sa.Column('phone', sa.String(), nullable=True),
+    sa.Column('email', sa.String(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email')
+    )
+    op.create_index(op.f('ix_referringphysician_id'), 'referringphysician', ['id'], unique=False)
+    op.create_index(op.f('ix_referringphysician_licence'), 'referringphysician', ['licence'], unique=True)
+    op.create_table('typestudy',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('study_consent_template', sa.String(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name'),
+    sa.UniqueConstraint('study_consent_template')
+    )
+    op.create_index(op.f('ix_typestudy_id'), 'typestudy', ['id'], unique=False)
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
@@ -38,7 +60,7 @@ def upgrade():
     sa.Column('type', sa.String(), nullable=False),
     sa.Column('hashed_password', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('licence', sa.Integer(), nullable=True),
+    sa.Column('license', sa.Integer(), nullable=True),
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('dni', sa.Integer(), nullable=True),
     sa.Column('birth_date', sa.Date(), nullable=True),
@@ -55,12 +77,15 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('result', sa.Boolean(), nullable=True),
     sa.Column('date_report', sa.Date(), nullable=True),
-    sa.Column('informant_doctor_id', sa.Integer(), nullable=True),
+    sa.Column('created_date', sa.Date(), nullable=True),
+    sa.Column('referring_physician_id', sa.Integer(), nullable=True),
     sa.Column('patient_id', sa.Integer(), nullable=True),
+    sa.Column('type_study_id', sa.Integer(), nullable=True),
     sa.Column('report', sa.Text(), nullable=True),
     sa.Column('state', sqlalchemy_utils.types.choice.ChoiceType(StudyState), nullable=True),
-    sa.ForeignKeyConstraint(['informant_doctor_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['patient_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['referring_physician_id'], ['referringphysician.id'], ),
+    sa.ForeignKeyConstraint(['type_study_id'], ['typestudy.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_study_id'), 'study', ['id'], unique=False)
@@ -74,6 +99,11 @@ def downgrade():
     op.drop_index(op.f('ix_user_id'), table_name='user')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
+    op.drop_index(op.f('ix_typestudy_id'), table_name='typestudy')
+    op.drop_table('typestudy')
+    op.drop_index(op.f('ix_referringphysician_licence'), table_name='referringphysician')
+    op.drop_index(op.f('ix_referringphysician_id'), table_name='referringphysician')
+    op.drop_table('referringphysician')
     op.drop_index(op.f('ix_healthinsurance_telephone'), table_name='healthinsurance')
     op.drop_index(op.f('ix_healthinsurance_name'), table_name='healthinsurance')
     op.drop_index(op.f('ix_healthinsurance_id'), table_name='healthinsurance')

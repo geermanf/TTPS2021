@@ -62,9 +62,10 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         if existing_user is not None:
             raise UsernameAlreadyRegistered()
 
-        existing_user = self.get_by_email(db, email=data["email"])
-        if existing_user is not None:
-            raise EmailAlreadyRegistered()
+        if 'email' in data:
+            existing_user = self.get_by_email(db, email=data["email"])
+            if existing_user is not None:
+                raise EmailAlreadyRegistered()
 
     def create(
         self, db: Session, *, db_obj: ModelType, obj_in: Union[CreateSchemaType, Dict[str, Any]]
