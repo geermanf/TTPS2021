@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase, ModelType, CreateSchemaType, UpdateSchemaType
-from app.models import User, Admin, Employee, InformantDoctor, Patient
+from app.models import User, Admin, Employee, InformantPhysician, Patient
 from app.schemas import (
     AdminCreate, AdminUpdate,
     InformantCreate, InformantUpdate,
@@ -139,10 +139,10 @@ class CRUDAdmin(CRUDUser[Admin, AdminCreate, AdminUpdate]):
         return super().create(db, db_obj=db_obj, obj_in=obj_in)
 
 
-class CRUDInformantDoctor(CRUDUser[InformantDoctor, InformantCreate, InformantUpdate]):
+class CRUDInformantPhysician(CRUDUser[InformantPhysician, InformantCreate, InformantUpdate]):
 
-    def create(self, db: Session, *, obj_in: InformantCreate) -> InformantDoctor:
-        db_obj = InformantDoctor(
+    def create(self, db: Session, *, obj_in: InformantCreate) -> InformantPhysician:
+        db_obj = InformantPhysician(
             hashed_password=get_password_hash(obj_in.password),
             first_name=obj_in.first_name,
             last_name=obj_in.last_name,
@@ -184,6 +184,6 @@ admin = CRUDAdmin(Admin)
 
 employee = CRUDEmployee(Employee)
 
-informant_doctor = CRUDInformantDoctor(InformantDoctor)
+informant_physician = CRUDInformantPhysician(InformantPhysician)
 
 patient = CRUDPatient(Patient)

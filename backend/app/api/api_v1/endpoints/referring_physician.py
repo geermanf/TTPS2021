@@ -66,11 +66,11 @@ def update_referring_physician(
     """
     Update a referring physician.
     """
-    doctor = crud.referring_physician.get(db, id=referring_physician_id)
-    if not doctor:
+    physician = crud.referring_physician.get(db, id=referring_physician_id)
+    if not physician:
         raise HTTPException(
             status_code=404,
             detail="The referring physician with this id does not exist in the system",
         )
-    doctor = crud.referring_physician.update(db, db_obj=doctor, obj_in=referring_physician_in)
-    return doctor
+    physician = crud.referring_physician.update(db, db_obj=physician, obj_in=referring_physician_in)
+    return physician

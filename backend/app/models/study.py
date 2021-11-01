@@ -6,7 +6,7 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql import func
 from app.db.base_class import Base
 
-from .user import InformantDoctor, Patient
+from .user import InformantPhysician, Patient
 from .referring_physician import ReferringPhysician
 from enum import Enum
 
@@ -40,9 +40,9 @@ class Study(Base):
     id = Column(Integer, primary_key=True, index=True)
     result = Column(Boolean(), default=True)  # dudaa, capaz string
 
-    informant_doctor_id = Column(Integer, ForeignKey(InformantDoctor.id))
-    informant_doctor = relationship(InformantDoctor, primaryjoin=informant_doctor_id ==
-                                    InformantDoctor.id, back_populates="studies_informed")
+    informant_physician_id = Column(Integer, ForeignKey(InformantPhysician.id))
+    informant_physician = relationship(InformantPhysician, primaryjoin=informant_physician_id ==
+                                    InformantPhysician.id, back_populates="studies_informed")
     patient_id = Column(Integer, ForeignKey(Patient.id))
 
     date_report = Column(Date())

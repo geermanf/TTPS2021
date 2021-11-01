@@ -109,7 +109,7 @@ class Employee(UserInDBBase, EmployeeBase):
     pass
 
 
-class InformantDoctor(UserInDBBase, InformantBase):
+class InformantPhysician(UserInDBBase, InformantBase):
     pass
 
 

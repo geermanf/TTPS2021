@@ -1,4 +1,4 @@
-from .crud_user import admin, user, employee, patient, informant_doctor
+from .crud_user import admin, user, employee, patient, informant_physician
 from .study import study
 from .crud_referring_physician import referring_physician
 from .crud_type_study import type_study

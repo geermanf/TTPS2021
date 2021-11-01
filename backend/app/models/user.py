@@ -63,7 +63,7 @@ class Config(User):
         'polymorphic_identity': 'config'
     }
 
-class InformantDoctor(User):
+class InformantPhysician(User):
     # (*) en squema.InformantCreate se asegura
     # el NOT NULL constraint en el campo
     
@@ -71,9 +71,9 @@ class InformantDoctor(User):
 
     license = Column(Integer, nullable=True) # *
     studies_informed = relationship(
-        "Study", primaryjoin="InformantDoctor.id == Study.informant_doctor_id", back_populates="informant_doctor")
+        "Study", primaryjoin="InformantPhysician.id == Study.informant_physician_id", back_populates="informant_physician")
     __mapper_args__ = {
-        'polymorphic_identity': 'informantdoctor'
+        'polymorphic_identity': 'informantphysician'
     }
 
 

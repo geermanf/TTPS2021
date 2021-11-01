@@ -18,29 +18,29 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.InformantDoctor])
-def read_informant_doctors(
+@router.get("/", response_model=List[schemas.InformantPhysician])
+def read_informant_physicians(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Retrieve informant doctors.
+    Retrieve informant physicians.
     """
-    informants = crud.informant_doctor.get_multi(db, skip=skip, limit=limit)
+    informants = crud.informant_physician.get_multi(db, skip=skip, limit=limit)
     return informants
 
 
-@router.post("/", response_model=schemas.InformantDoctor)
-def create_informant_doctor(
+@router.post("/", response_model=schemas.InformantPhysician)
+def create_informant_physician(
     *,
     db: Session = Depends(deps.get_db),
     informant_in: schemas.InformantCreate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Create new informant doctor.
+    Create new informant physician.
     """
     try:
         informant = crud.informant.create(db, obj_in=informant_in)
@@ -61,8 +61,8 @@ def create_informant_doctor(
     return informant
 
 
-@router.get("/{informant_id}", response_model=schemas.InformantDoctor)
-def read_informant_doctor_by_id(
+@router.get("/{informant_id}", response_model=schemas.InformantPhysician)
+def read_informant_physician_by_id(
     informant_id: int,
     current_user: models.User = Depends(deps.get_current_active_user),
     db: Session = Depends(deps.get_db),
@@ -70,7 +70,7 @@ def read_informant_doctor_by_id(
     """
     Get a specific informant by id.
     """
-    informant = crud.informant_doctor.get(db, id=informant_id)
+    informant = crud.informant_physician.get(db, id=informant_id)
     if informant == current_user:
         return informant
     if not crud.user.is_admin(current_user):
@@ -80,8 +80,8 @@ def read_informant_doctor_by_id(
     return informant
 
 
-@router.put("/{informant_id}", response_model=schemas.InformantDoctor)
-def update_informant_doctor(
+@router.put("/{informant_id}", response_model=schemas.InformantPhysician)
+def update_informant_physician(
     *,
     db: Session = Depends(deps.get_db),
     informant_id: int,
@@ -89,10 +89,10 @@ def update_informant_doctor(
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Update an informant doctor.
+    Update an informant physician.
     """
     try:
-        informant = crud.informant_doctor.update(
+        informant = crud.informant_physician.update(
             db, db_obj=informant, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
