@@ -1,4 +1,4 @@
-from .crud_user import admin, user, employee, patient
+from .crud_user import admin, user, employee, patient, informant_doctor
 from .study import study
 
 # For a new basic set of CRUD operations you could just do

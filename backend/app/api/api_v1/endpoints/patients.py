@@ -4,7 +4,10 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-
+from app.crud.crud_user import (
+    UsernameAlreadyRegistered,
+    EmailAlreadyRegistered
+)
 from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
@@ -23,7 +26,7 @@ def read_patients(
     """
     Retrieve patients.
     """
-    patients = crud.employee.get_multi(db, skip=skip, limit=limit)
+    patients = crud.patient.get_multi(db, skip=skip, limit=limit)
     return patients
 
 
@@ -32,18 +35,23 @@ def create_patient(
     *,
     db: Session = Depends(deps.get_db),
     patient_in: schemas.PatientCreate,
-    current_patient: models.Patient = Depends(deps.get_current_active_superuser),
+    current_user: models.Patient = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Create new patient.
     """
-    patient = crud.user.get_by_username(db, username=patient_in.username)
-    if patient:
+    try:
+        patient = crud.patient.create(db, obj_in=patient_in)
+    except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
-            detail="Ya existe un empleado con el mismo nombre de usuario.",
+            detail="El username ingresado ya se encuentra registrado",
         )
-    patient = crud.patient.create(db, obj_in=patient_in)
+    except EmailAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El email ingresado ya se encuentra registrado",
+        )
     if settings.EMAILS_ENABLED and patient_in.email:
         send_new_account_email(
             email_to=patient_in.email, username=patient_in.username, password=patient_in.password
@@ -61,25 +69,31 @@ def create_patient_open(
     last_name: str = Body(None),
 ) -> Any:
     """
-    Create new employee without the need to be logged in.
+    Create new patient without the need to be logged in.
     """
     if not settings.USERS_OPEN_REGISTRATION:
         raise HTTPException(
             status_code=403,
-            detail="Open employee registration is forbidden on this server",
+            detail="Open users registration is forbidden on this server",
         )
-    employee = crud.employee.get_by_email(db, email=email)
-    if employee:
+    patient_in = schemas.PatientCreate(
+        password=password, first_name=first_name, last_name=last_name)
+    try:
+        patient = crud.patient.create(db, obj_in=patient_in)
+    except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
-            detail="Ya existe un empleado con el mismo nombre de usuario.",
+            detail="El username ingresado ya se encuentra registrado",
         )
-    employee_in = schemas.PatientCreate(password=password, first_name=first_name, last_name=last_name)
-    employee = crud.employee.create(db, obj_in=employee_in)
-    return employee
+    except EmailAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El email ingresado ya se encuentra registrado",
+        )
+    return patient
 
 
-@router.get("/{employee_id}", response_model=schemas.Patient)
+@router.get("/{patient_id}", response_model=schemas.Patient)
 def read_patient_by_id(
     patient_id: int,
     current_user: models.User = Depends(deps.get_current_active_user),
@@ -89,7 +103,8 @@ def read_patient_by_id(
     Get a specific patient by id.
     """
     patient = crud.patient.get(db, id=patient_id)
-
+    if patient == current_user:
+        return patient
     if not crud.user.is_admin(current_user):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
@@ -97,7 +112,7 @@ def read_patient_by_id(
     return patient
 
 
-@router.put("/{employee_id}", response_model=schemas.Patient)
+@router.put("/{patient_id}", response_model=schemas.Patient)
 def update_patient(
     *,
     db: Session = Depends(deps.get_db),
@@ -112,7 +127,17 @@ def update_patient(
     if not patient:
         raise HTTPException(
             status_code=404,
-            detail="The patient with this username does not exist in the system",
+            detail="The patient with this id does not exist in the system",
         )
-    patient = crud.patient.update(db, db_obj=patient, obj_in=patient_in)
-    return patient
+    try:
+        return crud.patient.update(db, db_obj=patient, obj_in=patient_in)
+    except UsernameAlreadyRegistered:
+        raise HTTPException(
+            status_code=404,
+            detail="El username ingresado ya se encuentra registrado",
+        )
+    except EmailAlreadyRegistered:
+        raise HTTPException(
+            status_code=404,
+            detail="El email ingresado ya se encuentra registrado",
+        )

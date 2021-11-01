@@ -32,8 +32,8 @@ def polymorphic_fallback(mapper_klass):
 @polymorphic_fallback  # https://stackoverflow.com/a/50983187
 class User(Base):
     # NOTA: al aplicarse Single table inheritance,
-    # subclases de User no pueden tener campos not null
-    # forzarlo en los squemas
+    # subclases de User no pueden tener NOT NULL constraint.
+    # Se los fuerza en los squemas (los llamados "pydantic models")
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     first_name = Column(String, nullable=False)
@@ -64,10 +64,12 @@ class Config(User):
     }
 
 class InformantDoctor(User):
+    # (*) en squema.InformantCreate se asegura
+    # el NOT NULL constraint en el campo
+    
     __tablename__ = None
 
-    # asegurar en el squema que no sea null
-    licence = Column(Integer, nullable=True)
+    license = Column(Integer, nullable=True) # *
     studies_informed = relationship(
         "Study", primaryjoin="InformantDoctor.id == Study.informant_doctor_id", back_populates="informant_doctor")
     __mapper_args__ = {
@@ -76,13 +78,13 @@ class InformantDoctor(User):
 
 
 class Patient(User):
+    # (*) en squema.PatientCreate se asegura
+    # el NOT NULL constraint en los campos
+    
     __tablename__ = None
-    # asegurar en el squema que no sea null
-    email = Column(String, unique=True, index=True, nullable=True)
-    # asegurar en el squema que no sea null
-    dni = Column(Integer, nullable=True)
-    # asegurar en el squema que no sea null
-    birth_date = Column(Date(), nullable=True)
+    email = Column(String, unique=True, index=True, nullable=True) # *
+    dni = Column(Integer, nullable=True) # *
+    birth_date = Column(Date(), nullable=True) # *
     health_insurance_number = Column(Integer)
     health_insurance_id = Column(Integer, ForeignKey("healthinsurance.id"))
     health_insurance = relationship(

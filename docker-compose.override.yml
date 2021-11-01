@@ -7,6 +7,8 @@ services:
       - ./backend/startup.sh:/startup.sh
       - ./backend/app:/app
       - ./backend/alembic:/alembic
+      - ./backend/poetry.lock:/app/poetry.lock
+      - ./backend/pyproject.toml:/app/pyproject.toml
     build:
       context: ./backend
       dockerfile: backend.dockerfile
