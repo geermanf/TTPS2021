@@ -1,32 +1,96 @@
-from typing import Optional
+from typing import List, Optional, Any
 
 from pydantic import BaseModel
+from datetime import datetime
+
+from enum import Enum
+
+from .user import User, Patient, InformantPhysician, Employee
+from .referring_physician import ReferringPhysician
+
+class ResultEnum(str, Enum):
+    # PENDING = 'pendiente'
+    POSITIVE = 'positivo'
+    NEGATIVE = 'negativo'
+
+
+
+class HistoryBase(BaseModel):
+    study_id: int
+    employee_id: int
+    state: Any
+    state_entered_date: datetime
+
+class HistoryInDBBase(HistoryBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class History(HistoryInDBBase):
+    pass
+
+
+class ReportBase(BaseModel):
+    result: Optional[ResultEnum] = None
+    report: Optional[str]
+
+class ReportCreate(ReportBase):
+    study_id: int
+    informant_physician_id: int
+    result: ResultEnum
+    report: str
+
+class ReportInDBBase(ReportBase):
+    id: int
+    date_report: Optional[datetime] = None #TODO: que no sea opcional
+    informant_physician: Optional[InformantPhysician] = None #TODO: que no sea opcional
+    
+    class Config:
+        orm_mode = True
+
+class Report(ReportInDBBase):
+    pass
+
+
 
 
 # Shared properties
 class StudyBase(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-
+    budget: Optional[float] = None
 
 # Properties to receive on item creation
 class StudyCreate(StudyBase):
-    title: str
+    type_study_id: int
+    patient_id: int
+    referring_physician: int
+    presumptive_diagnosis_id: int
+    referring_physician_id: int
 
 
 # Properties to receive on item update
 class StudyUpdate(StudyBase):
-    pass
+    type_study_id: Optional[int]
+    presumptive_diagnosis_id: Optional[int]
+    referring_physician_id: Optional[int]
 
 
 # Properties shared by models stored in DB
 class StudyInDBBase(StudyBase):
     id: int
-    title: str
-    owner_id: int
+    created_date: Optional[datetime] = None #TODO: arreglar el None
+    updated_date: Optional[datetime] = None
+    current_state: Optional[Any] = None
+    current_state_entered_date: Optional[datetime] = None
+    employee: Optional[Employee] = None #TODO: arreglar el None
+    patient: Patient
+    referring_physician: ReferringPhysician
+    presumptive_diagnosis: Any #TODO: impl
+    report: Optional[Report] = None
 
     class Config:
         orm_mode = True
+
 
 
 # Properties to return to client
@@ -45,6 +109,7 @@ class TypeStudyBase(BaseModel):
 
 
 class TypeStudyInDBBase(TypeStudyBase):
+    id: Optional[int] = None
     class Config:
         orm_mode = True
 
@@ -55,11 +120,13 @@ class TypeStudyCreate(TypeStudyBase):
 
 
 class TypeStudyUpdate(TypeStudyBase):
-    name: str
-    study_consent_template: str
+    name: Optional[str] = None
+    study_consent_template: Optional[str] = None
 
 
 class TypeStudy(TypeStudyInDBBase):
     pass
 
 
+class DetailedReport(Report):
+    study: Study

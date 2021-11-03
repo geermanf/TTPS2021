@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 class ReferringPhysicianBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    licence: Optional[int] = None
+    license: Optional[int] = None
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
@@ -24,14 +24,14 @@ class ReferringPhysicianInDBBase(ReferringPhysicianBase):
 class ReferringPhysicianCreate(ReferringPhysicianBase):
     first_name: str
     last_name: str
-    licence: int
+    license: int
     email: EmailStr
 
 
 class ReferringPhysicianUpdate(ReferringPhysicianBase):
     first_name: str
     last_name: str
-    licence: int
+    license: int
     email: EmailStr
     is_active: Optional[bool] = True
 

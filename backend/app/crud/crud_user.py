@@ -126,6 +126,15 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def is_admin(self, user: User) -> bool:
         return user.type == 'admin'
+    
+    def is_employee(self, user: User) -> bool:
+        return user.type == 'employee'
+    
+    def is_informant_physician(self, user: User) -> bool:
+        return user.type == 'informantphysician'
+    
+    def tipe(self, user: User) -> str:
+        return user.type
 
 
 class CRUDAdmin(CRUDUser[Admin, AdminCreate, AdminUpdate]):
@@ -168,14 +177,20 @@ class CRUDPatient(CRUDUser[Patient, PatientCreate, PatientUpdate]):
 
     def create(self, db: Session, *, obj_in: PatientCreate) -> Patient:
         db_obj = Patient(
-            hashed_password=get_password_hash(obj_in.password),
             first_name=obj_in.first_name,
             last_name=obj_in.last_name,
             username=obj_in.username,
+            hashed_password=get_password_hash(obj_in.password),
             email=obj_in.email,
+            dni=obj_in.dni,
+            birth_date=obj_in.birth_date,
+            health_insurance_number=obj_in.health_insurance_number,
+            clinical_history=obj_in.clinical_history
         )
         return super().create(db, db_obj=db_obj, obj_in=obj_in)
 
+
+# falta el configurador
 
 
 user = CRUDUser(User)

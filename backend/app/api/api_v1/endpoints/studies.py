@@ -14,12 +14,12 @@ def read_studies(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    #current_user: models.User = Depends(deps.get_current_active_user)
 ) -> Any:
     """
     Retrieve studies.
     """
-    if crud.user.is_admin(current_user):
+    if True: #crud.user.is_admin(current_user):
         studies = crud.study.get_multi(db, skip=skip, limit=limit)
     else:
         studies = crud.study.get_multi_by_owner(
@@ -33,12 +33,12 @@ def create_study(
     *,
     db: Session = Depends(deps.get_db),
     study_in: schemas.StudyCreate,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_employee: models.User = Depends(deps.get_current_if_employee),
 ) -> Any:
     """
     Create new study.
     """
-    study = crud.study.create_with_owner(db=db, obj_in=study_in, owner_id=current_user.id)
+    study = crud.study.create_with_owner(db=db, obj_in=study_in, employee_id=current_employee.id)
     return study
 
 
@@ -66,8 +66,7 @@ def update_study(
 def read_study(
     *,
     db: Session = Depends(deps.get_db),
-    id: int,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    id: int
 ) -> Any:
     """
     Get study by ID.
@@ -75,8 +74,6 @@ def read_study(
     study = crud.study.get(db=db, id=id)
     if not study:
         raise HTTPException(status_code=404, detail="Study not found")
-    if not crud.user.is_admin(current_user) and (study.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
     return study
 
 

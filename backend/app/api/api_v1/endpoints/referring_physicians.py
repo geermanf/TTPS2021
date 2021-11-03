@@ -29,11 +29,11 @@ def create_referring_physician(
     """
     Create new referring physician.
     """
-    referring_physician = crud.referring_physician.get_by_licence(db, licence=referring_physician_in.licence)
+    referring_physician = crud.referring_physician.get_by_license(db, license=referring_physician_in.license)
     if referring_physician:
         raise HTTPException(
             status_code=400,
-            detail="The referring physician with this licence already exists in the system.",
+            detail="The referring physician with this license already exists in the system.",
         )
     referring_physician = crud.referring_physician.create(db, obj_in=referring_physician_in)
     return referring_physician

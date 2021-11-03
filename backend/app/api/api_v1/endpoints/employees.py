@@ -21,7 +21,7 @@ def read_employees(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Retrieve employees.
@@ -35,7 +35,7 @@ def create_employee(
     *,
     db: Session = Depends(deps.get_db),
     employee_in: schemas.EmployeeCreate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Create new employee.
@@ -84,7 +84,7 @@ def update_employee(
     db: Session = Depends(deps.get_db),
     employee_id: int,
     employee_in: schemas.EmployeeUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Update an employee.

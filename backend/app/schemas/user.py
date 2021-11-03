@@ -1,5 +1,5 @@
 from typing import Optional
-
+from datetime import date
 from pydantic import BaseModel, EmailStr
 
 
@@ -29,7 +29,7 @@ class InformantBase(UserBase):
 class PatientBase(UserBase):
     email: Optional[EmailStr]
     dni: Optional[str]
-    birth_date: Optional[str]
+    birth_date: Optional[date]
     health_insurance_number: Optional[int]
     clinical_history: Optional[str]
 
@@ -56,10 +56,11 @@ class InformantCreate(InformantBase):
 class PatientCreate(PatientBase):
     first_name: str
     last_name: str
+    username: str
     password: str
     email: EmailStr
     dni: str
-    birth_date: str
+    birth_date: date
     health_insurance_number: int
     clinical_history: str
 

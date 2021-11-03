@@ -23,7 +23,7 @@ def read_informant_physicians(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Retrieve informant physicians.
@@ -31,19 +31,19 @@ def read_informant_physicians(
     informants = crud.informant_physician.get_multi(db, skip=skip, limit=limit)
     return informants
 
-
+#TODO: current_user no se usa, asi que llamar adentro para validar permiso
 @router.post("/", response_model=schemas.InformantPhysician)
 def create_informant_physician(
     *,
     db: Session = Depends(deps.get_db),
     informant_in: schemas.InformantCreate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Create new informant physician.
     """
     try:
-        informant = crud.informant.create(db, obj_in=informant_in)
+        informant = crud.informant_physician.create(db, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
@@ -86,7 +86,7 @@ def update_informant_physician(
     db: Session = Depends(deps.get_db),
     informant_id: int,
     informant_in: schemas.InformantUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Update an informant physician.

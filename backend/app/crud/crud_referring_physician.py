@@ -8,8 +8,8 @@ from app.models.referring_physician import ReferringPhysician
 
 class CRUDReferringPhysician(CRUDBase[ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate]):
 
-    def get_by_licence(self, db: Session, *, licence: int) -> Optional[ReferringPhysician]:
-        return db.query(ReferringPhysician).filter(ReferringPhysician.licence == licence).first()
+    def get_by_license(self, db: Session, *, license: int) -> Optional[ReferringPhysician]:
+        return db.query(ReferringPhysician).filter(ReferringPhysician.license == license).first()
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[ReferringPhysician]:
         return db.query(ReferringPhysician).filter(ReferringPhysician.email == email).first()
@@ -18,7 +18,7 @@ class CRUDReferringPhysician(CRUDBase[ReferringPhysician, ReferringPhysicianCrea
         db_obj = ReferringPhysician(
             first_name=obj_in.first_name,
             last_name=obj_in.last_name,
-            licence=obj_in.licence,
+            license=obj_in.license,
             phone=obj_in.phone,
             email=obj_in.email,
             is_active=obj_in.is_active

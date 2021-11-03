@@ -6,7 +6,7 @@ class ReferringPhysician(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    licence = Column(Integer, unique=True, index=True, nullable=False)
+    license = Column(Integer, unique=True, index=True, nullable=False)
     phone = Column(String)
     email = Column(String, nullable=False, unique=True)
     is_active = Column(Boolean, default=True)

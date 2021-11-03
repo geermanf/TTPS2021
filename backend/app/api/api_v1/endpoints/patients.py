@@ -21,7 +21,7 @@ def read_patients(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.Patient = Depends(deps.get_current_active_superuser),
+    current_user: models.Patient = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Retrieve patients.
@@ -35,7 +35,7 @@ def create_patient(
     *,
     db: Session = Depends(deps.get_db),
     patient_in: schemas.PatientCreate,
-    current_user: models.Patient = Depends(deps.get_current_active_superuser),
+    current_user: models.Patient = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Create new patient.
@@ -63,10 +63,11 @@ def create_patient(
 def create_patient_open(
     *,
     db: Session = Depends(deps.get_db),
+    first_name: str = Body(...),
+    last_name: str = Body(...),
     password: str = Body(...),
-    email: EmailStr = Body(...),
-    first_name: str = Body(None),
-    last_name: str = Body(None),
+    email: EmailStr = Body(...)
+    
 ) -> Any:
     """
     Create new patient without the need to be logged in.
@@ -118,7 +119,7 @@ def update_patient(
     db: Session = Depends(deps.get_db),
     patient_id: int,
     patient_in: schemas.PatientUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_if_admin),
 ) -> Any:
     """
     Update a patient.

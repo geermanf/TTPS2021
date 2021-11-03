@@ -47,15 +47,35 @@ def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_active(current_user):
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=400, detail="Usuario inactivo")
     return current_user
 
 
-def get_current_active_superuser(
+def get_current_if_admin(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_admin(current_user):
         raise HTTPException(
-            status_code=400, detail="The user doesn't have enough privileges"
+            status_code=400, detail="Necesita ser administrador para realizar la operación."
+        )
+    return current_user
+
+
+def get_current_if_employee(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
+    # if not crud.user.is_employee(current_user):
+    #     raise HTTPException(
+    #         status_code=400, detail="Necesita ser un empleado del laboratorio para realizar la operación."
+    #     )
+    return current_user
+
+
+def get_current_if_informant_physician(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
+    if not crud.user.is_informant_physician(current_user):
+        raise HTTPException(
+            status_code=400, detail="Necesita ser un médico informante para realizar la operación."
         )
     return current_user
