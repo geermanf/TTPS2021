@@ -18,17 +18,16 @@ export class Patient implements BaseModel {
   }
 
   public prepare(formData: any): Patient {
-    let patient = new Patient();
-    patient.username = formData.username;
-    patient.first_name = formData.first_name;
-    patient.last_name = formData.last_name;
-    patient.email = formData.email
-    patient.dni = formData.dni;
-    patient.birth_date = formData.birth_date.year + "-" + formData.birth_date.month + "-" + formData.birth_date.day;
-    patient.health_insurance_number = formData.health_insurance_number !== null && formData.health_insurance_number !== undefined ? formData.health_insurance_number : 0;
-    patient.clinical_history = formData.clinical_history !== null && formData.clinical_history !== undefined ? formData.clinical_history : "";
-    patient.password = "asd";
+    this.username = formData.username;
+    this.first_name = formData.first_name;
+    this.last_name = formData.last_name;
+    this.email = formData.email
+    this.dni = formData.dni;
+    this.birth_date = formData.birth_date.year + "-" + formData.birth_date.month + "-" + formData.birth_date.day;
+    this.health_insurance_number = formData.health_insurance_number !== null && formData.health_insurance_number !== undefined && formData.health_insurance_number !== "" ? formData.health_insurance_number : 0;
+    this.clinical_history = formData.clinical_history !== null && formData.clinical_history !== undefined ? formData.clinical_history : "";
+    this.password = "asd";
 
-    return patient;
+    return this;
   }
 }

@@ -123,6 +123,7 @@ export class EditPatientModalComponent implements OnInit, OnDestroy {
 
   save() {
     let patient = new Patient();
+    patient.id = this.patient.id;
     this.patient = patient.prepare(this.formGroup.value);
     if (this.patient.id) {
       this.edit();
