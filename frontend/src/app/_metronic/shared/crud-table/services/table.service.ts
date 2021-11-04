@@ -1,13 +1,14 @@
 // tslint:disable:variable-name
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { PaginatorState } from '../models/paginator.model';
 import { ITableState, TableResponseModel } from '../models/table.model';
 import { BaseModel } from '../models/base.model';
 import { SortState } from '../models/sort.model';
 import { GroupingState } from '../models/grouping.model';
 import { environment } from '../../../../../environments/environment';
+import { baseFilter } from './http-extenstions';
 
 const DEFAULT_STATE: ITableState = {
   filter: {},
@@ -82,15 +83,15 @@ export abstract class TableService<T> {
     );
   }
 
-  // READ (Returning filtered list of entities)
   find(tableState: ITableState): Observable<TableResponseModel<T>> {
-    const url = this.API_URL + '/find';
-    this._errorMessage.next('');
-    return this.http.post<TableResponseModel<T>>(url, tableState).pipe(
-      catchError(err => {
-        this._errorMessage.next(err);
-        console.error('FIND ITEMS', err);
-        return of({ items: [], total: 0 });
+    return this.http.get<T[]>(this.API_URL).pipe(
+      map((response: T[]) => {
+        const filteredResult = baseFilter(response, tableState);
+        const result: TableResponseModel<T> = {
+          items: filteredResult.items,
+          total: filteredResult.total
+        };
+        return result;
       })
     );
   }
@@ -124,22 +125,6 @@ export abstract class TableService<T> {
     );
   }
 
-  // UPDATE Status
-  updateStatusForItems(ids: number[], status: number): Observable<any> {
-    this._isLoading$.next(true);
-    this._errorMessage.next('');
-    const body = { ids, status };
-    const url = this.API_URL + '/updateStatus';
-    return this.http.put(url, body).pipe(
-      catchError(err => {
-        this._errorMessage.next(err);
-        console.error('UPDATE STATUS FOR SELECTED ITEMS', ids, status, err);
-        return of([]);
-      }),
-      finalize(() => this._isLoading$.next(false))
-    );
-  }
-
   // DELETE
   delete(id: any): Observable<any> {
     this._isLoading$.next(true);
@@ -155,21 +140,40 @@ export abstract class TableService<T> {
     );
   }
 
-  // delete list of items
-  deleteItems(ids: number[] = []): Observable<any> {
-    this._isLoading$.next(true);
-    this._errorMessage.next('');
-    const url = this.API_URL + '/deleteItems';
-    const body = { ids };
-    return this.http.put(url, body).pipe(
-      catchError(err => {
-        this._errorMessage.next(err);
-        console.error('DELETE SELECTED ITEMS', ids, err);
-        return of([]);
-      }),
-      finalize(() => this._isLoading$.next(false))
-    );
-  }
+  // public fetch() {
+  //   this._isLoading$.next(true);
+  //   this._errorMessage.next('');
+  //   const request = this.find()
+  //     .pipe(
+  //       tap((res) => {
+  //         this._items$.next(res);
+  //         this.patchStateWithoutFetch({
+  //           paginator: this._tableState$.value.paginator.recalculatePaginator(
+  //             res.total
+  //           ),
+  //         });
+  //       }),
+  //       catchError((err) => {
+  //         this._errorMessage.next(err);
+  //         return of({
+  //           items: [],
+  //           total: 0
+  //         });
+  //       }),
+  //       finalize(() => {
+  //         this._isLoading$.next(false);
+  //         const itemIds = this._items$.value.map((el: T) => {
+  //           const item = (el as unknown) as BaseModel;
+  //           return item.id;
+  //         });
+  //         this.patchStateWithoutFetch({
+  //           grouping: this._tableState$.value.grouping.clearRows(itemIds),
+  //         });
+  //       })
+  //     )
+  //     .subscribe();
+  //   this._subscriptions.push(request);
+  // }
 
   public fetch() {
     this._isLoading$.next(true);

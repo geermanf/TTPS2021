@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ElementRef, Output, EventEmitter, Injectable } from '@angular/core';
 import { SortDirection } from '../../models/sort.model';
 
 @Component({
@@ -6,6 +6,8 @@ import { SortDirection } from '../../models/sort.model';
   templateUrl: './sort-icon.component.html',
   styleUrls: ['./sort-icon.component.scss']
 })
+
+@Injectable()
 export class SortIconComponent implements OnInit, OnChanges {
   @Input() column: string;
   @Input() activeColumn: string;
