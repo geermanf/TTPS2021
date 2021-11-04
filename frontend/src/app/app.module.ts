@@ -1,7 +1,7 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { ClipboardModule } from 'ngx-clipboard';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,6 +14,10 @@ import { environment } from 'src/environments/environment';
 // Highlight JS
 import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { SplashScreenModule } from './_metronic/partials/layout/splash-screen/splash-screen.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CRUDTableModule } from './_metronic/shared/crud-table';
+import { InterceptService } from './fwk/_base/crud';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 function appInitializer(authService: AuthService) {
@@ -38,8 +42,13 @@ function appInitializer(authService: AuthService) {
     AppRoutingModule,
     InlineSVGModule.forRoot(),
     NgbModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
+    CRUDTableModule
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: InterceptService, multi: true },
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializer,
@@ -59,6 +68,7 @@ function appInitializer(authService: AuthService) {
       },
     },
   ],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
