@@ -150,7 +150,7 @@ export const DefaultLayoutConfig =
   "footer": {
     "display": true,
     "width": "fluid",
-    "fixed": false
+    "fixed": true
   },
   "extras": {
     "search": {

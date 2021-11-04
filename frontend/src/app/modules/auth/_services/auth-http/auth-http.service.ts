@@ -34,8 +34,6 @@ export class AuthHTTPService {
   }
 
   getUserByToken(token): Observable<UserModel> {
-    let httpHeaders = new HttpHeaders();
-    httpHeaders = httpHeaders.set('Authorization', 'Bearer ' + token);
-    return this.http.get<UserModel>(API_USERS_URL + '/user-by-token', { headers: httpHeaders });
+    return this.http.get<UserModel>(API_USERS_URL + '/user-by-token');
   }
 }

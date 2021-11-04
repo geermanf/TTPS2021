@@ -20,6 +20,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'patients',
+        loadChildren: () =>
+          import('../modules/patient/patient.module').then(
+            (m) => m.PatientModule
+          ),
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

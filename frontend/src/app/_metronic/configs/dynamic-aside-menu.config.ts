@@ -27,6 +27,20 @@ export const DynamicAsideMenuConfig = {
           page: '/user-management/roles'
         }
       ]
+    },
+    {
+      title: 'Pacientes',
+      root: true,
+      bullet: 'dot',
+      icon: 'flaticon2-user-outline-symbol',
+      svg: './assets/media/svg/icons/General/User.svg',
+      page: '/patients',
+      submenu: [
+        {
+          title: 'Lista de Pacientes',
+          page: '/patients/patients'
+        },
+      ]
     }
   ]
 };

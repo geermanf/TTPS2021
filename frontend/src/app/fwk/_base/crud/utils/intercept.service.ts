@@ -20,7 +20,7 @@ export class InterceptService implements HttpInterceptor {
   private authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
 
 
-  constructor(private router: Router, private notifyService: NotifyService, private authService: AuthService)
+  constructor(private router: Router)
   {
 
   }
@@ -34,10 +34,10 @@ export class InterceptService implements HttpInterceptor {
     // modify request
 
     this.notShowError = false;
-    // const authData = JSON.parse(
-    //   localStorage.getItem(this.authLocalStorageToken)
-    // );
-    let authData = this.authService.getAuthFromLocalStorage()
+    const authData = JSON.parse(
+      localStorage.getItem(this.authLocalStorageToken)
+    );
+    // let authData = this.authService.getAuthFromLocalStorage()
 
     if (authData) {
       request = request.clone({
@@ -56,6 +56,7 @@ export class InterceptService implements HttpInterceptor {
         },
         error => {
           if (error.status === 401 || error.status == 403) {
+            localStorage.removeItem(this.authLocalStorageToken)
             this.router.navigateByUrl('/authentication/login');
             this.notShowError = true;
           }
@@ -65,13 +66,13 @@ export class InterceptService implements HttpInterceptor {
             if (erroObjet) {
               for (let i in erroObjet.errors) {
                 console.log(i, erroObjet.errors[i].join(','));
-                this.notifyService.toastError(erroObjet.errors[i].join(', '), erroObjet.message ?? "Error");
+                // this.notifyService.toastError(erroObjet.errors[i].join(', '), erroObjet.message ?? "Error");
                 errorWasShown = true;
               }
             }
           }
           if (!errorWasShown && !this.notShowError) {
-            this.notifyService.toastError("A ocurrido un error, comuniquese con el administrador.", "Error");
+            // this.notifyService.toastError("A ocurrido un error, comuniquese con el administrador.", "Error");
           }
 
           if (erroObjet && erroObjet.DeveloperMessage) {
