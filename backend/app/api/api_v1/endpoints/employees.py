@@ -89,16 +89,17 @@ def update_employee(
     """
     Update an employee.
     """
+    employee = crud.employee.get(db, id=employee_id)
+    if not employee:
+        raise HTTPException(
+            status_code=404,
+            detail="The employee with this id does not exist in the system",
+        )
     try:
         employee = crud.employee.update(db, db_obj=employee, obj_in=employee_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
             detail="El username ingresado ya se encuentra registrado",
-        )
-    except EmailAlreadyRegistered:
-        raise HTTPException(
-            status_code=400,
-            detail="El email ingresado ya se encuentra registrado",
         )
     return employee

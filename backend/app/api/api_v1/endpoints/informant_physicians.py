@@ -6,12 +6,10 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from app.crud.crud_user import (
     UsernameAlreadyRegistered,
-    EmailAlreadyRegistered
+    LicenseAlreadyRegistered
 )
 from app import crud, models, schemas
 from app.api import deps
-from app.core.config import settings
-from app.utils import send_new_account_email
 
 from fastapi import APIRouter
 
@@ -31,7 +29,9 @@ def read_informant_physicians(
     informants = crud.informant_physician.get_multi(db, skip=skip, limit=limit)
     return informants
 
-#TODO: current_user no se usa, asi que llamar adentro para validar permiso
+# TODO: current_user no se usa, asi que llamar adentro para validar permiso
+
+
 @router.post("/", response_model=schemas.InformantPhysician)
 def create_informant_physician(
     *,
@@ -43,22 +43,17 @@ def create_informant_physician(
     Create new informant physician.
     """
     try:
-        informant = crud.informant_physician.create(db, obj_in=informant_in)
+        return crud.informant_physician.create(db, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
-    except EmailAlreadyRegistered:
+    except LicenseAlreadyRegistered:
         raise HTTPException(
             status_code=400,
-            detail="El email ingresado ya se encuentra registrado",
+            detail="La licencia ingresada ya se encuentra registrada",
         )
-    if settings.EMAILS_ENABLED and informant_in.email:
-        send_new_account_email(
-            email_to=informant_in.email, username=informant_in.username, password=informant_in.password
-        )
-    return informant
 
 
 @router.get("/{informant_id}", response_model=schemas.InformantPhysician)
@@ -91,17 +86,22 @@ def update_informant_physician(
     """
     Update an informant physician.
     """
+    informant = crud.informant_physician.get(db, id=informant_id)
+    if not informant:
+        raise HTTPException(
+            status_code=404,
+            detail="The informant with this id does not exist in the system",
+        )
     try:
-        informant = crud.informant_physician.update(
+        return crud.informant_physician.update(
             db, db_obj=informant, obj_in=informant_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
-    except EmailAlreadyRegistered:
+    except LicenseAlreadyRegistered:
         raise HTTPException(
             status_code=400,
-            detail="El email ingresado ya se encuentra registrado",
+            detail="La licencia ingresada ya se encuentra registrada",
         )
-    return informant

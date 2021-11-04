@@ -6,7 +6,8 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from app.crud.crud_user import (
     UsernameAlreadyRegistered,
-    EmailAlreadyRegistered
+    EmailAlreadyRegistered,
+    DniAlreadyRegistered
 )
 from app import crud, models, schemas
 from app.api import deps
@@ -52,6 +53,11 @@ def create_patient(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
         )
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
+        )
     if settings.EMAILS_ENABLED and patient_in.email:
         send_new_account_email(
             email_to=patient_in.email, username=patient_in.username, password=patient_in.password
@@ -80,7 +86,7 @@ def create_patient_open(
     patient_in = schemas.PatientCreate(
         password=password, first_name=first_name, last_name=last_name)
     try:
-        patient = crud.patient.create(db, obj_in=patient_in)
+        return crud.patient.create(db, obj_in=patient_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
@@ -91,7 +97,11 @@ def create_patient_open(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
         )
-    return patient
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
+        )
 
 
 @router.get("/{patient_id}", response_model=schemas.Patient)
@@ -134,11 +144,16 @@ def update_patient(
         return crud.patient.update(db, db_obj=patient, obj_in=patient_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
-            status_code=404,
+            status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
     except EmailAlreadyRegistered:
         raise HTTPException(
-            status_code=404,
+            status_code=400,
             detail="El email ingresado ya se encuentra registrado",
+        )
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
         )
