@@ -15,13 +15,15 @@ def init_db(db: Session) -> None:
     # the tables un-commenting the next line
     # Base.metadata.create_all(bind=engine)
 
-    user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER)
+    user = crud.admin.get_by_username(db, username=settings.ADMIN_USERNAME)
     if not user:
-        user_in = schemas.UserCreate(
-            email=settings.FIRST_SUPERUSER,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
+        user_in = schemas.AdminCreate(
+            username=settings.ADMIN_USERNAME,
+            password=settings.ADMIN_PASSWORD,
             first_name='admin',
-            last_name='admin',
-            is_superuser=True,
+            last_name='admin'
         )
-        user = crud.user.create(db, obj_in=user_in)  # noqa: F841
+
+        user = crud.admin.create(db, obj_in=user_in)  # noqa: F841
+    
+    # Cargar data inicial ...

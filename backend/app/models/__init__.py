@@ -1,4 +1,6 @@
-from .item import Item
-from .user import User
-from .study import Study
+from .user import User, Admin, Config, InformantPhysician, Patient, Employee
+from .study import StudyState, Study, TypeStudy
+from .diagnosis import Diagnosis
+from .study_updates import StudyHistory, Report
 from .health_insurance import HealthInsurance
+from .referring_physician import ReferringPhysician

@@ -41,3 +41,55 @@ coc-settings.json
 
 # macOS
 .DS_Store
+
+# Pycharm
+.idea
+
+# Custon docker compose
+backend-only.yml
+
+
+# FRONTEND
+
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/frontend/dist
+/frontend/tmp
+/frontend/out-tsc
+
+# dependencies
+/frontend/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/frontend/.sass-cache
+/frontend/connect.lock
+/frontend/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/frontend/e2e/*.js
+/frontend/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db

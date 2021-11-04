@@ -6,8 +6,8 @@ Primero crear en la carpeta raiz del proyecto el archivo .env con al menos estos
 PROJECT_NAME=ttps-grupo8
 
 SERVER_HOST=http://localhost
-FIRST_SUPERUSER=admin@mylab.com
-FIRST_SUPERUSER_PASSWORD=changeme
+ADMIN_USERNAME=changeme
+ADMIN_PASSWORD=changeme
 
 # Postgres
 POSTGRES_SERVER=db
@@ -31,13 +31,13 @@ docker-compose up -d
 Luego:
 
 ```
-docker-compose backend bash
+docker-compose exec backend bash
 ```
 
 dentro del contenedor:
 
 ```
-./startup.sh
+bash startup.sh
 ```
 
 Si todo salió bien, se puede acceder a la documentación de la api:
@@ -52,9 +52,19 @@ Y también visualizar y modificar la base de datos median pgAdmin (ingresando la
 http://localhost:5050
 ```
 
-
 ## Sección para desarrolladores del backend
 
+### Actualizar imagen del backend
+
+Para el caso en que se quiera agregar un paquete, una vez dentro del contenedor del backend ejecutar:
+```
+poetry add nombre-del-paquete
+```
+si todo salió correctamnete, el comando anterior modificó los archivos asociados a poetry que se encuentran
+dentro de la carpeta `backend`. Lo que restaría es construir nuevamente la imagen del docker del backend:
+```
+docker-compose build backend
+```
 ### Migrations
 
 Make sure you create a "revision" of your models and that you "upgrade" your database with that revision every time you change them. As this is what will update the tables in the database. Otherwise, the application will have errors.

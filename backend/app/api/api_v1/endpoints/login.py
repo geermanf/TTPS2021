@@ -27,7 +27,7 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = crud.user.authenticate(
-        db, email=form_data.username, password=form_data.password
+        db, username=form_data.username, password=form_data.password
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
@@ -42,7 +42,7 @@ def login_access_token(
     }
 
 
-@router.post("/login/test-token", response_model=schemas.User)
+@router.get("/login/user-by-token", response_model=schemas.User)
 def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
     """
     Test access token
