@@ -71,7 +71,7 @@ class InformantPhysician(User):
 
     __tablename__ = None
 
-    license = Column(Integer, nullable=True)  # *
+    license = Column(Integer, unique=True, nullable=True)  # *
     reports = relationship(
         "Report", primaryjoin="InformantPhysician.id == Report.informant_physician_id", back_populates="informant_physician")
     __mapper_args__ = {
@@ -85,7 +85,7 @@ class Patient(User):
 
     __tablename__ = None
     email = Column(String, unique=True, index=True, nullable=True)  # *
-    dni = Column(Integer, nullable=True)  # *
+    dni = Column(Integer, unique=True, nullable=True)  # *
     birth_date = Column(Date(), nullable=True)  # *
     health_insurance_number = Column(Integer)
     health_insurance_id = Column(Integer, ForeignKey("healthinsurance.id"))

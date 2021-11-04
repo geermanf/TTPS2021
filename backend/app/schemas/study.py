@@ -63,9 +63,9 @@ class StudyBase(BaseModel):
 class StudyCreate(StudyBase):
     type_study_id: int
     patient_id: int
-    referring_physician: int
-    presumptive_diagnosis_id: int
     referring_physician_id: int
+    presumptive_diagnosis_id: int
+
 
 
 # Properties to receive on item update
@@ -84,10 +84,11 @@ class StudyInDBBase(StudyBase):
     current_state_entered_date: Optional[datetime] = None
     employee: Optional[Employee] = None #TODO: arreglar el None
     patient: Patient
+    type_study: Any #TODO: implementar esquema
     referring_physician: ReferringPhysician
-    presumptive_diagnosis: Any #TODO: impl
+    presumptive_diagnosis: Any #TODO: implementar esquema
     report: Optional[Report] = None
-
+    #history
     class Config:
         orm_mode = True
 

@@ -58,6 +58,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
             return db.query(self.model).filter(self.model.email == email).first()
     
     def _validate_creation(self, db: Session, db_obj: ModelType, data: Dict[str, Any]) -> None:
+        # TODO: para un paciente validar unico dni, medico unica licencia
         existing_user = self.get_by_username(db, username=data["username"])
         if existing_user is not None:
             raise UsernameAlreadyRegistered()
