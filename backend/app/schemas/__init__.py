@@ -13,5 +13,3 @@ from .study import (
     TypeStudyUpdate, TypeStudy
 )
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate
-from .role import Role, RoleCreate, RoleUpdate
-from .user_role import UserRole, UserRoleCreate, UserRoleUpdate

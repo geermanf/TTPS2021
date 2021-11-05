@@ -4,8 +4,7 @@ from app.api.api_v1.endpoints import (
     login, employees, patients,
     studies, health_insurances, utils,
     reporting_physicians, referring_physicians,
-    type_studies, presumptive_diagnoses,
-    roles, user_roles
+    type_studies, presumptive_diagnoses
 )
 
 api_router = APIRouter()
@@ -18,5 +17,3 @@ api_router.include_router(reporting_physicians.router, prefix="/reporting-physic
 api_router.include_router(studies.router, prefix="/studies", tags=["Studies"])
 api_router.include_router(type_studies.router, prefix="/type-studies", tags=["Types of Studies"])
 api_router.include_router(presumptive_diagnoses.router, prefix="/presumptive_diagnoses", tags=["Presumptive Diagnoses"])
-api_router.include_router(roles.router, prefix="/roles", tags=["Roles"])
-api_router.include_router(user_roles.router, prefix="/user-roles", tags=["Roles of a User"])

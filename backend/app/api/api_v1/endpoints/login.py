@@ -34,10 +34,10 @@ def login_access_token(
     elif not crud.user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    if not user.user_role:
+    if not user.type:
         role = "GUEST"
     else:
-        role = user.user_role.role.name
+        role = user.type
     token_payload = {
         "id": str(user.id),
         "role": role

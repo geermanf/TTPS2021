@@ -7,5 +7,3 @@ from app.models.study_updates import StudyHistory, Report # noqa
 from app.models.diagnosis import Diagnosis # noqa
 from app.models.health_insurance import HealthInsurance # noqa
 from app.models.referring_physician import ReferringPhysician  # noqa
-from app.models.role import Role  # noqa
-from app.models.user_role import UserRole  # noqa

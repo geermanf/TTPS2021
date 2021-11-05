@@ -1,10 +1,9 @@
 from typing import Any, Dict, Optional, Union
 
 from sqlalchemy.orm import Session
-from app.constants.role import Role
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase, ModelType, CreateSchemaType, UpdateSchemaType
-from app.models import User, Admin, Employee, ReportingPhysician, Patient, UserRole
+from app.models import User, Admin, Employee, ReportingPhysician, Patient
 from app.schemas import (
     AdminCreate, AdminUpdate,
     ReportingCreate, ReportingUpdate,
@@ -56,9 +55,6 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         if existing_user is not None:
             raise UsernameAlreadyRegistered()
 
-    def _get_role_obj(self, db: Session):
-        return crud.role.get_by_name(db=db, name=Role.GUEST["name"])
-
     def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, Dict[str, Any]]
     ) -> ModelType:
@@ -76,12 +72,6 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
-        # asignación de rol al usuario recien creado
-        role_obj = self._get_role_obj(db=db)
-        user_role = UserRole(user_id=db_obj.id, role_id=role_obj.id)
-        db.add(user_role)
-        db.commit()
-
         return db_obj
 
     def _validate_update(self, db: Session, db_obj: ModelType, data: Dict[str, Any]) -> None:
@@ -126,7 +116,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         return user.type == 'employee'
 
     def is_reporting_physician(self, user: User) -> bool:
-        return user.type == 'reportingphysician'
+        return user.type == 'reporting-physician'
 
     def type(self, user: User) -> str:
         return user.type
@@ -151,19 +141,14 @@ class CRUDReportingPhysician(CRUDUser[ReportingPhysician, ReportingCreate, Repor
 
     def get_by_license(self, db: Session, license: str) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.license == license).first()
-    
-    def _get_role_obj(self, db: Session):
-        return crud.role.get_by_name(db=db, name=Role.REPORTING_PHYSICIAN["name"])
 
 
 class CRUDEmployee(CRUDUser[Employee, EmployeeCreate, EmployeeUpdate]):
-    def _get_role_obj(self, db: Session):
-        return crud.role.get_by_name(db=db, name=Role.EMPLOYEE["name"])
+    pass
 
 
 class CRUDAdmin(CRUDUser[Admin, AdminCreate, AdminUpdate]):
-    def _get_role_obj(self, db: Session):
-        return crud.role.get_by_name(db=db, name=Role.ADMIN["name"])
+    pass
 
 
 class CRUDPatient(CRUDUser[Patient, PatientCreate, PatientUpdate]):
@@ -194,9 +179,6 @@ class CRUDPatient(CRUDUser[Patient, PatientCreate, PatientUpdate]):
             user = self.get_by_dni(db, dni=dni)
             if user is not None:
                 raise DniAlreadyRegistered()
-
-    def _get_role_obj(self, db: Session):
-        return crud.role.get_by_name(db=db, name=Role.PATIENT["name"])
 
 
 admin = CRUDAdmin(Admin)
