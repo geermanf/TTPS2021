@@ -10,7 +10,7 @@ from sqlalchemy.orm import relationship
 from enum import Enum
 
 from app.db.base_class import Base
-
+from app.constants.role import Role
 if TYPE_CHECKING:
     from .health_insurance import HealthInsurance  # noqa: F401
     from .study import Study  # noqa: F401
@@ -53,7 +53,7 @@ class Admin(User):
     __tablename__ = None
 
     __mapper_args__ = {
-        'polymorphic_identity': 'admin'
+        'polymorphic_identity': Role.ADMIN["name"]
     }
 
 
@@ -61,21 +61,21 @@ class Config(User):
     __tablename__ = None
 
     __mapper_args__ = {
-        'polymorphic_identity': 'config'
+        'polymorphic_identity': Role.CONFIGURATOR["name"]
     }
 
 
-class InformantPhysician(User):
-    # (*) en squema.InformantCreate se asegura
+class ReportingPhysician(User):
+    # (*) en squema.ReportingCreate se asegura
     # el NOT NULL constraint en el campo
 
     __tablename__ = None
 
     license = Column(Integer, unique=True, nullable=True)  # *
     reports = relationship(
-        "Report", primaryjoin="InformantPhysician.id == Report.informant_physician_id", back_populates="informant_physician")
+        "Report", primaryjoin="ReportingPhysician.id == Report.reporting_physician_id", back_populates="reporting_physician")
     __mapper_args__ = {
-        'polymorphic_identity': 'informantphysician'
+        'polymorphic_identity': Role.REPORTING_PHYSICIAN["name"]
     }
 
 
@@ -96,7 +96,7 @@ class Patient(User):
     clinical_history = Column(Text)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'patient'
+        'polymorphic_identity': Role.PATIENT["name"]
     }
 
 
@@ -110,5 +110,5 @@ class Employee(User):
         "StudyHistory", primaryjoin="Employee.id==StudyHistory.employee_id", back_populates="employee")
 
     __mapper_args__ = {
-        'polymorphic_identity': 'employee'
+        'polymorphic_identity': Role.EMPLOYEE["name"]
     }

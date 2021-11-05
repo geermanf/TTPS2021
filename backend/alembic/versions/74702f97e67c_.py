@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 070c7d9c3713
+Revision ID: 74702f97e67c
 Revises: 
-Create Date: 2021-11-03 21:19:52.920336
+Create Date: 2021-11-05 18:14:57.594106
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 from app.models import StudyState
 
 # revision identifiers, used by Alembic.
-revision = '070c7d9c3713'
+revision = '74702f97e67c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -76,6 +76,8 @@ def upgrade():
     sa.Column('clinical_history', sa.Text(), nullable=True),
     sa.ForeignKeyConstraint(['health_insurance_id'], ['healthinsurance.id'], ),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('dni'),
+    sa.UniqueConstraint('license'),
     sa.UniqueConstraint('username')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
@@ -103,11 +105,11 @@ def upgrade():
     op.create_table('report',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('study_id', sa.Integer(), nullable=True),
-    sa.Column('informant_physician_id', sa.Integer(), nullable=True),
+    sa.Column('reporting_physician_id', sa.Integer(), nullable=True),
     sa.Column('result', sa.String(), nullable=True),
     sa.Column('date_report', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('report', sa.Text(), nullable=True),
-    sa.ForeignKeyConstraint(['informant_physician_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['reporting_physician_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['study_id'], ['study.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

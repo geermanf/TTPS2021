@@ -12,7 +12,7 @@ from app.models import Patient, Employee
 
 class StudyState(Enum):
     state_one = "esperando_comprobante"
-    state_one_error = "anulado_falta_pago"
+    state_one_error = "Anulado por falta de pago"
     state_two = "enviar_consentimiento"
     state_three = "esperando_consentimiento_firmado"
     state_four = "esperando_seleccion_turno"

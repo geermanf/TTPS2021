@@ -11,7 +11,6 @@ from app.db.base_class import Base
 # -With TypeVar, ModelType can be any type, as long as the above is true
 
 ModelType = TypeVar("ModelType", bound=Base)
-
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 

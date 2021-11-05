@@ -5,7 +5,7 @@ from datetime import datetime
 
 from enum import Enum
 
-from .user import User, Patient, InformantPhysician, Employee
+from .user import User, Patient, ReportingPhysician, Employee
 from .referring_physician import ReferringPhysician
 
 class ResultEnum(str, Enum):
@@ -37,14 +37,14 @@ class ReportBase(BaseModel):
 
 class ReportCreate(ReportBase):
     study_id: int
-    informant_physician_id: int
+    reporting_physician_id: int
     result: ResultEnum
     report: str
 
 class ReportInDBBase(ReportBase):
     id: int
     date_report: Optional[datetime] = None #TODO: que no sea opcional
-    informant_physician: Optional[InformantPhysician] = None #TODO: que no sea opcional
+    reporting_physician: Optional[ReportingPhysician] = None #TODO: que no sea opcional
     
     class Config:
         orm_mode = True

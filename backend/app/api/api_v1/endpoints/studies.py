@@ -1,10 +1,9 @@
 from typing import Any, List
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
-
 from app import crud, models, schemas
 from app.api import deps
+from app.constants.role import Role
 
 router = APIRouter()
 
@@ -14,7 +13,10 @@ def read_studies(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    #current_user: models.User = Depends(deps.get_current_active_user)
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    )
 ) -> Any:
     """
     Retrieve studies.
@@ -33,7 +35,10 @@ def create_study(
     *,
     db: Session = Depends(deps.get_db),
     study_in: schemas.StudyCreate,
-    current_employee: models.User = Depends(deps.get_current_if_employee),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    )
 ) -> Any:
     """
     Create new study.
@@ -77,6 +82,18 @@ def read_study(
     return study
 
 
+@router.post("/{id}/generate-budget")
+def generate_budget(
+    id: int,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]]
+    ),
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    return []
+
+
 @router.delete("/{id}", response_model=schemas.Study)
 def delete_study(
     *,
@@ -94,3 +111,4 @@ def delete_study(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     study = crud.study.remove(db=db, id=id)
     return study
+
