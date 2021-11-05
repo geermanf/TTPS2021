@@ -42,6 +42,7 @@ class User(Base):
     type = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean(), default=True)
+    user_role = relationship("UserRole", back_populates="user", uselist=False)
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -65,17 +66,17 @@ class Config(User):
     }
 
 
-class InformantPhysician(User):
-    # (*) en squema.InformantCreate se asegura
+class ReportingPhysician(User):
+    # (*) en squema.ReportingCreate se asegura
     # el NOT NULL constraint en el campo
 
     __tablename__ = None
 
     license = Column(Integer, unique=True, nullable=True)  # *
     reports = relationship(
-        "Report", primaryjoin="InformantPhysician.id == Report.informant_physician_id", back_populates="informant_physician")
+        "Report", primaryjoin="ReportingPhysician.id == Report.reporting_physician_id", back_populates="reporting_physician")
     __mapper_args__ = {
-        'polymorphic_identity': 'informantphysician'
+        'polymorphic_identity': 'reportingphysician'
     }
 
 

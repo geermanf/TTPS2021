@@ -4,7 +4,7 @@ from .user import (
     User, Administrator, AdminCreate, AdminInDB, AdminUpdate,
     Configurator, ConfigCreate, ConfigInDB, ConfigUpdate,
     Employee, EmployeeCreate, EmployeeInDB, EmployeeUpdate,
-    InformantPhysician, InformantCreate, InformantInDB, InformantUpdate,
+    ReportingPhysician, ReportingCreate, ReportingInDB, ReportingUpdate,
     Patient, PatientCreate, PatientInDB, PatientUpdate
 )
 from .health_insurance import HealthInsurance, HealthInsuranceCreate, HealthInsuranceInDB, HealthInsuranceUpdate
@@ -13,3 +13,5 @@ from .study import (
     TypeStudyUpdate, TypeStudy
 )
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate
+from .role import Role, RoleCreate, RoleUpdate
+from .user_role import UserRole, UserRoleCreate, UserRoleUpdate

@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
 from app.utils import send_new_account_email
+from app.constants.role import Role
 
 router = APIRouter()
 
@@ -21,7 +22,11 @@ def read_employees(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.CONFIGURATOR["name"]],
+    ),
+    
 ) -> Any:
     """
     Retrieve employees.
@@ -35,7 +40,10 @@ def create_employee(
     *,
     db: Session = Depends(deps.get_db),
     employee_in: schemas.EmployeeCreate,
-    current_user: models.User = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.CONFIGURATOR["name"]],
+    ),
 ) -> Any:
     """
     Create new employee.
@@ -58,11 +66,14 @@ def create_employee(
         )
     return employee
 
-
+#mirar luego
 @router.get("/{employee_id}", response_model=schemas.Employee)
 def read_employee_by_id(
     employee_id: int,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.CONFIGURATOR["name"]],
+    ),
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
@@ -84,7 +95,10 @@ def update_employee(
     db: Session = Depends(deps.get_db),
     employee_id: int,
     employee_in: schemas.EmployeeUpdate,
-    current_user: models.User = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.CONFIGURATOR["name"]],
+    ),
 ) -> Any:
     """
     Update an employee.

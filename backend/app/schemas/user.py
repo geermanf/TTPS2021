@@ -22,7 +22,7 @@ class ConfigBase(UserBase):
 class EmployeeBase(UserBase):
     pass
 
-class InformantBase(UserBase):
+class ReportingBase(UserBase):
     license: Optional[int]
 
 
@@ -48,7 +48,7 @@ class EmployeeCreate(EmployeeBase):
     password: str
 
 
-class InformantCreate(InformantBase):
+class ReportingCreate(ReportingBase):
     license: int
     password: str
 
@@ -59,7 +59,7 @@ class PatientCreate(PatientBase):
     username: str
     password: str
     email: EmailStr
-    dni: str
+    dni: int
     birth_date: date
     health_insurance_number: int
     clinical_history: str
@@ -78,7 +78,7 @@ class EmployeeUpdate(EmployeeBase):
     password: Optional[str] = None
 
 
-class InformantUpdate(InformantBase):
+class ReportingUpdate(ReportingBase):
     password: Optional[str] = None
 
 
@@ -110,7 +110,7 @@ class Employee(UserInDBBase, EmployeeBase):
     pass
 
 
-class InformantPhysician(UserInDBBase, InformantBase):
+class ReportingPhysician(UserInDBBase, ReportingBase):
     pass
 
 
@@ -131,7 +131,7 @@ class EmployeeInDB(UserInDBBase, EmployeeBase):
     hashed_password: str
 
 
-class InformantInDB(UserInDBBase, InformantBase):
+class ReportingInDB(UserInDBBase, ReportingBase):
     hashed_password: str
 
 

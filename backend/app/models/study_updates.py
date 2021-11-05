@@ -6,7 +6,7 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy_utils import ChoiceType
 from app.db.base_class import Base
-from app.models import StudyState, Employee, InformantPhysician
+from app.models import StudyState, Employee, ReportingPhysician
 
 
 class StudyHistory(Base):
@@ -25,8 +25,8 @@ class Report(Base):
     study_id = Column(Integer, ForeignKey("study.id"))
     study = relationship("Study", primaryjoin="Report.study_id == Study.id", back_populates="report")
 
-    informant_physician_id = Column(Integer, ForeignKey(InformantPhysician.id))
-    informant_physician = relationship("InformantPhysician", primaryjoin="Report.informant_physician_id == InformantPhysician.id", back_populates="reports")
+    reporting_physician_id = Column(Integer, ForeignKey(ReportingPhysician.id))
+    reporting_physician = relationship("ReportingPhysician", primaryjoin="Report.reporting_physician_id == ReportingPhysician.id", back_populates="reports")
 
     result = Column(String(), default=False)
     date_report = Column(DateTime(), server_default=func.now())

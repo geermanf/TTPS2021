@@ -1,8 +1,8 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
 from pydantic.networks import EmailStr
-
+from app.constants.role import Role
 from app import models, schemas
 from app.api import deps
 # from app.core.celery_app import celery_app
@@ -26,7 +26,10 @@ router = APIRouter()
 @router.post("/test-email/", response_model=schemas.Msg, status_code=201)
 def test_email(
     email_to: EmailStr,
-    current_user: models.User = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    )
 ) -> Any:
     """
     Test emails.

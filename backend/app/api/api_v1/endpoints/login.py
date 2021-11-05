@@ -30,13 +30,21 @@ def login_access_token(
         db, username=form_data.username, password=form_data.password
     )
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     elif not crud.user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    if not user.user_role:
+        role = "GUEST"
+    else:
+        role = user.user_role.role.name
+    token_payload = {
+        "id": str(user.id),
+        "role": role
+    }
     return {
         "access_token": security.create_access_token(
-            user.id, expires_delta=access_token_expires
+            token_payload, expires_delta=access_token_expires
         ),
         "token_type": "bearer",
     }
@@ -55,7 +63,7 @@ def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
     """
     Password Recovery
     """
-    user = crud.user.get_by_email(db, email=email)
+    user = crud.user.get_by_email(db, email=email) # no definido para users...
 
     if not user:
         raise HTTPException(

@@ -13,7 +13,3 @@ class ReferringPhysician(Base):
     studies_referred = relationship(
         "Study", primaryjoin="ReferringPhysician.id == Study.referring_physician_id",
         back_populates="referring_physician")
-
-
-
-
