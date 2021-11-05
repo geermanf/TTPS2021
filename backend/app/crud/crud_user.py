@@ -57,8 +57,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
             raise UsernameAlreadyRegistered()
 
     def _get_role_obj(self, db: Session):
-        # definido en las subclases
-        pass
+        return crud.role.get_by_name(db=db, name=Role.GUEST["name"])
 
     def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, Dict[str, Any]]
@@ -150,9 +149,8 @@ class CRUDReportingPhysician(CRUDUser[ReportingPhysician, ReportingCreate, Repor
             except UserNotExists:
                 pass
 
-    def get_by_license(self, db: Session, *, email: str) -> Optional[ModelType]:
-        if hasattr(self.model, 'license'):
-            return db.query(self.model).filter(self.model.license == license).first()
+    def get_by_license(self, db: Session, license: str) -> Optional[ModelType]:
+        return db.query(self.model).filter(self.model.license == license).first()
     
     def _get_role_obj(self, db: Session):
         return crud.role.get_by_name(db=db, name=Role.REPORTING_PHYSICIAN["name"])

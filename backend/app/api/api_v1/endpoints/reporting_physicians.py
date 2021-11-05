@@ -69,7 +69,7 @@ def read_reporting_physician_by_id(
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
-    Get a specific reporting by id.
+    Get a specific reporting physician by id.
     """
     reporting = crud.reporting_physician.get(db, id=reporting_id)
     if reporting == current_user:
@@ -93,7 +93,7 @@ def update_reporting_physician(
     )
 ) -> Any:
     """
-    Update an reporting physician.
+    Update a reporting physician.
     """
     reporting = crud.reporting_physician.get(db, id=reporting_id)
     if not reporting:
