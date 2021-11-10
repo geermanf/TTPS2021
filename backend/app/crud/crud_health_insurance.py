@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
 from app.models import HealthInsurance
-from app.schemas import HealthInsurance, HealthInsuranceCreate, HealthInsuranceInDB, HealthInsuranceUpdate
+from app.schemas import HealthInsuranceCreate, HealthInsuranceUpdate
+from app.crud.base import CRUDBase
 
-
-class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
-    # implementar
+class CRUDHealthInsurance(CRUDBase[HealthInsurance, HealthInsuranceCreate, HealthInsuranceUpdate]):
     pass
 
-study = CRUDStudy(Study)
+health_insurance = CRUDHealthInsurance(HealthInsurance)

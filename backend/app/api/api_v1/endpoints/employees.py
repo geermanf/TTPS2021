@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-from app.crud.crud_user import (
+from app.crud import (
     UsernameAlreadyRegistered,
     EmailAlreadyRegistered
 )

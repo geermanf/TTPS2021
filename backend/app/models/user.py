@@ -11,6 +11,9 @@ from enum import Enum
 
 from app.db.base_class import Base
 from app.constants.role import Role
+from sqlalchemy.event import listens_for
+
+
 if TYPE_CHECKING:
     from .health_insurance import HealthInsurance  # noqa: F401
     from .study import Study  # noqa: F401
@@ -107,8 +110,14 @@ class Employee(User):
         "Study", primaryjoin="Employee.id == Study.employee_id", back_populates="patient")
 
     studies_updated = relationship(
-        "StudyHistory", primaryjoin="Employee.id==StudyHistory.employee_id", back_populates="employee")
+        "StudyHistory", primaryjoin="Employee.id == StudyHistory.employee_id", back_populates="employee")
 
     __mapper_args__ = {
         'polymorphic_identity': Role.EMPLOYEE["name"]
     }
+
+
+@listens_for(Patient, 'after_update')
+def after_update_function(mapper, connection, target):
+    print("##########################")
+    print(target.username)

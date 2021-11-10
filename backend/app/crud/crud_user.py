@@ -3,46 +3,15 @@ from typing import Any, Dict, Optional, Union
 from sqlalchemy.orm import Session
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase, ModelType, CreateSchemaType, UpdateSchemaType
-from app.models import User, Admin, Employee, ReportingPhysician, Patient
+from app.models import User, Admin, Config, Employee, ReportingPhysician, Patient
+from app.crud.exceptions import *
 from app.schemas import (
     AdminCreate, AdminUpdate,
+    ConfigCreate, ConfigUpdate,
     ReportingCreate, ReportingUpdate,
     EmployeeCreate, EmployeeUpdate,
     PatientCreate, PatientUpdate
 )
-from app import crud
-
-
-class FastAPIUsersException(Exception):
-    pass
-
-
-class UserAlreadyExists(FastAPIUsersException):
-    pass
-
-
-class UsernameAlreadyRegistered(FastAPIUsersException):
-    pass
-
-
-class EmailAlreadyRegistered(FastAPIUsersException):
-    pass
-
-
-class DniAlreadyRegistered(FastAPIUsersException):
-    pass
-
-
-class LicenseAlreadyRegistered(FastAPIUsersException):
-    pass
-
-
-class UserNotExists(FastAPIUsersException):
-    pass
-
-
-class UserInactive(FastAPIUsersException):
-    pass
 
 
 class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -75,6 +44,8 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     def _validate_update(self, db: Session, db_obj: ModelType, data: Dict[str, Any]) -> None:
+        if 'username' not in data:
+            return
         username = data["username"]
         if username and username != db_obj.username:
             user = self.get_by_username(db, username)
@@ -92,11 +63,12 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         self._validate_update(db, db_obj, update_data)
 
-        if update_data["password"]:
-            hashed_password = get_password_hash(update_data["password"])
-            del update_data["password"]
-            update_data["hashed_password"] = hashed_password
-        return super().update(db, db_obj, obj_in)
+        if 'password' in update_data:
+            if update_data["password"]:
+                hashed_password = get_password_hash(update_data["password"])
+                del update_data["password"]
+                update_data["hashed_password"] = hashed_password
+        return super().update(db=db, db_obj=db_obj, obj_in=update_data)
 
     def authenticate(self, db: Session, *, username: str, password: str) -> Optional[ModelType]:
         user = self.get_by_username(db, username=username)
@@ -151,6 +123,10 @@ class CRUDAdmin(CRUDUser[Admin, AdminCreate, AdminUpdate]):
     pass
 
 
+class CRUDConfig(CRUDUser[Config, ConfigCreate, ConfigUpdate]):
+    pass
+
+
 class CRUDPatient(CRUDUser[Patient, PatientCreate, PatientUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[ModelType]:
         return db.query(Patient).filter(Patient.email == email).first()
@@ -169,21 +145,25 @@ class CRUDPatient(CRUDUser[Patient, PatientCreate, PatientUpdate]):
 
     def _validate_update(self, db: Session, db_obj: Patient, data: Dict[str, Any]) -> None:
         super()._validate_update(db, db_obj, data)
-        email = data["email"]
-        if email and email != db_obj.email:
-            user = self.get_by_email(db, email=email)
-            if user is not None:
-                raise EmailAlreadyRegistered()
-        dni = data["dni"]
-        if dni and dni != db_obj.dni:
-            user = self.get_by_dni(db, dni=dni)
-            if user is not None:
-                raise DniAlreadyRegistered()
+        if 'email' in data:
+            email = data["email"]
+            if email and email != db_obj.email:
+                user = self.get_by_email(db, email=email)
+                if user is not None:
+                    raise EmailAlreadyRegistered()
+        if 'dni' in data:
+            dni = data["dni"]
+            if dni and dni != db_obj.dni:
+                user = self.get_by_dni(db, dni=dni)
+                if user is not None:
+                    raise DniAlreadyRegistered()
 
+
+user = CRUDUser(User)
 
 admin = CRUDAdmin(Admin)
 
-user = CRUDUser(User)
+config = CRUDConfig(Config)
 
 employee = CRUDEmployee(Employee)
 
