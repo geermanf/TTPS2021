@@ -22,9 +22,9 @@ class SampleBatchUpdate(SampleBatchBase):
 # Properties shared by models stored in DB
 class SampleBatchInDBBase(SampleBatchBase):
     id: int
-    created_date: datetime
-    current_state: str
-    samples: List[Sample]
+    created_date: Optional[datetime] = None
+    current_state: Optional[str] = None
+    samples: Optional[List[Sample]] = None
 
     class Config:
         orm_mode = True

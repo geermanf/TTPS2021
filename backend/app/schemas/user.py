@@ -22,6 +22,7 @@ class ConfigBase(UserBase):
 class EmployeeBase(UserBase):
     pass
 
+
 class ReportingBase(UserBase):
     license: Optional[int]
 
@@ -97,6 +98,7 @@ class UserInDBBase(UserBase):
 
 class User(UserInDBBase):
     pass
+
 
 class Administrator(UserInDBBase, AdminBase):
     pass

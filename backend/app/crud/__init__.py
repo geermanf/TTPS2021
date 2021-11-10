@@ -1,5 +1,6 @@
 from .crud_user import admin, config, user, employee, patient, reporting_physician
 from .crud_study import study
+from .crud_report import report
 from .crud_referring_physician import referring_physician
 from .crud_type_study import type_study
 from .crud_sample import sample

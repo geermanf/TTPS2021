@@ -36,3 +36,19 @@ class StudyAlreadyWithSample(FastAPIUsersException):
 
 class StudyAlreadyWithAppointment(FastAPIUsersException):
     pass
+
+
+class StudyAlreadyWithReport(FastAPIUsersException):
+    pass
+
+
+class SampleBatchAlreadyProccesed(FastAPIUsersException):
+    pass
+
+
+class SampleAlreadyPickedUp(FastAPIUsersException):
+    pass
+
+
+class SampleAlreadyPaid(FastAPIUsersException):
+    pass

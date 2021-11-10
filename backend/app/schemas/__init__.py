@@ -9,10 +9,11 @@ from .user import (
 )
 from .health_insurance import HealthInsurance, HealthInsuranceCreate, HealthInsuranceInDB, HealthInsuranceUpdate
 from .study import (
-    Study, StudyCreate, StudyInDB, StudyUpdate, TypeStudyCreate,
-    TypeStudyUpdate, TypeStudy
+    Study, StudyCreate, StudyInDB, StudyUpdate,
+    TypeStudyCreate, TypeStudyUpdate, TypeStudy
 )
+from .report import Report, ReportCreate, ReportUpdate
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate
-from .sample import Sample, SampleCreate, SampleUpdate, SamplePickedUp
+from .sample import Sample, SampleCreate, SampleUpdate
 from .appointment import Appointment, AppointmentCreate, AppointmentUpdate
 from .sample_batch import SampleBatch, SampleBatchCreate, SampleBatchUpdate

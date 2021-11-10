@@ -4,10 +4,10 @@ from datetime import datetime
 
 
 # Shared properties
-class SampleBase(BaseModel):    
+class SampleBase(BaseModel):
     ml_extracted: Optional[float] = None
     freezer_number: Optional[int] = None
-    
+
 
 # Properties to receive on item creation
 class SampleCreate(SampleBase):
@@ -20,10 +20,6 @@ class SampleUpdate(SampleBase):
     pass
 
 
-class SamplePickedUp(BaseModel):
-    picked_up_by: str
-
-
 # Properties shared by models stored in DB
 class SampleInDBBase(SampleBase):
     id: int
@@ -34,6 +30,7 @@ class SampleInDBBase(SampleBase):
     picked_up_date: Optional[datetime] = None
     sample_batch_id: Optional[int] = None
     #sample_batch = Optional[SampleBatch] = None
+    paid: Optional[bool] = None
 
     class Config:
         orm_mode = True

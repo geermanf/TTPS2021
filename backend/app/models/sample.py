@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Boolean
 from app.db.base_class import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -13,6 +13,7 @@ class Sample(Base):
     ml_extracted = Column(Float)
     freezer_number = Column(Integer)
     picked_up_by = Column(String, default="aun sin retirar")
-    picked_up_date = Column(DateTime(timezone=True)) # va no?
+    picked_up_date = Column(DateTime(timezone=True))
     sample_batch_id = Column(Integer, ForeignKey('samplebatch.id'))
     sample_batch = relationship("SampleBatch")
+    paid = Column(Boolean, default=False)

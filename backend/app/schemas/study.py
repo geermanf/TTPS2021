@@ -1,20 +1,12 @@
 from typing import List, Optional, Any
-
 from pydantic import BaseModel
 from datetime import datetime
-
-from enum import Enum
-
-from .user import User, Patient, ReportingPhysician, Employee
+from .user import Patient, Employee
 from .referring_physician import ReferringPhysician
 from .sample import Sample
 from .appointment import Appointment
+from .report import Report
 
-
-class ResultEnum(str, Enum):
-    # PENDING = 'pendiente'
-    POSITIVE = 'positivo'
-    NEGATIVE = 'negativo'
 
 
 class HistoryBase(BaseModel):
@@ -32,32 +24,6 @@ class HistoryInDBBase(HistoryBase):
 
 
 class History(HistoryInDBBase):
-    pass
-
-
-class ReportBase(BaseModel):
-    result: Optional[ResultEnum] = None
-    report: Optional[str]
-
-
-class ReportCreate(ReportBase):
-    study_id: int
-    reporting_physician_id: int
-    result: ResultEnum
-    report: str
-
-
-class ReportInDBBase(ReportBase):
-    id: int
-    date_report: Optional[datetime] = None  # TODO: que no sea opcional
-    # TODO: que no sea opcional
-    reporting_physician: Optional[ReportingPhysician] = None
-
-    class Config:
-        orm_mode = True
-
-
-class Report(ReportInDBBase):
     pass
 
 
@@ -139,7 +105,3 @@ class TypeStudyUpdate(TypeStudyBase):
 
 class TypeStudy(TypeStudyInDBBase):
     pass
-
-
-class DetailedReport(Report):
-    study: Study
