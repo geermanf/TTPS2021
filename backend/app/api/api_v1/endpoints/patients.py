@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-from app.crud.crud_user import (
+from app.crud import (
     UsernameAlreadyRegistered,
     EmailAlreadyRegistered,
     DniAlreadyRegistered
@@ -141,7 +141,7 @@ def update_patient(
     patient_in: schemas.PatientUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.PATIENT["name"]],
+        scopes=[Role.EMPLOYEE["name"]],
     ),
 ) -> Any:
     """

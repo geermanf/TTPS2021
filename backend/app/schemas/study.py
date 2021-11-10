@@ -7,12 +7,14 @@ from enum import Enum
 
 from .user import User, Patient, ReportingPhysician, Employee
 from .referring_physician import ReferringPhysician
+from .sample import Sample
+from .appointment import Appointment
+
 
 class ResultEnum(str, Enum):
     # PENDING = 'pendiente'
     POSITIVE = 'positivo'
     NEGATIVE = 'negativo'
-
 
 
 class HistoryBase(BaseModel):
@@ -21,11 +23,13 @@ class HistoryBase(BaseModel):
     state: Any
     state_entered_date: datetime
 
+
 class HistoryInDBBase(HistoryBase):
     id: int
 
     class Config:
         orm_mode = True
+
 
 class History(HistoryInDBBase):
     pass
@@ -35,24 +39,26 @@ class ReportBase(BaseModel):
     result: Optional[ResultEnum] = None
     report: Optional[str]
 
+
 class ReportCreate(ReportBase):
     study_id: int
     reporting_physician_id: int
     result: ResultEnum
     report: str
 
+
 class ReportInDBBase(ReportBase):
     id: int
-    date_report: Optional[datetime] = None #TODO: que no sea opcional
-    reporting_physician: Optional[ReportingPhysician] = None #TODO: que no sea opcional
-    
+    date_report: Optional[datetime] = None  # TODO: que no sea opcional
+    # TODO: que no sea opcional
+    reporting_physician: Optional[ReportingPhysician] = None
+
     class Config:
         orm_mode = True
 
+
 class Report(ReportInDBBase):
     pass
-
-
 
 
 # Shared properties
@@ -60,12 +66,13 @@ class StudyBase(BaseModel):
     budget: Optional[float] = None
 
 # Properties to receive on item creation
+
+
 class StudyCreate(StudyBase):
     type_study_id: int
     patient_id: int
     referring_physician_id: int
     presumptive_diagnosis_id: int
-
 
 
 # Properties to receive on item update
@@ -78,20 +85,24 @@ class StudyUpdate(StudyBase):
 # Properties shared by models stored in DB
 class StudyInDBBase(StudyBase):
     id: int
-    created_date: Optional[datetime] = None #TODO: arreglar el None
+    created_date: Optional[datetime] = None  # TODO: arreglar el None
     updated_date: Optional[datetime] = None
     current_state: Optional[Any] = None
     current_state_entered_date: Optional[datetime] = None
-    employee: Optional[Employee] = None #TODO: arreglar el None
-    patient: Patient
-    type_study: Any #TODO: implementar esquema
+    employee: Optional[Employee] = None  # TODO: arreglar el None
+    patient: Optional[Patient] = None
+    type_study: Any  # TODO: implementar esquema
     referring_physician: ReferringPhysician
-    presumptive_diagnosis: Any #TODO: implementar esquema
+    presumptive_diagnosis: Any  # TODO: implementar esquema
+    payment_receipt: Optional[str] = None
+    signed_consent: Optional[str] = None
+    appointment: Optional[Appointment] = None
     report: Optional[Report] = None
-    #history
+    # history
+    sample: Optional[Sample] = None
+
     class Config:
         orm_mode = True
-
 
 
 # Properties to return to client
@@ -111,6 +122,7 @@ class TypeStudyBase(BaseModel):
 
 class TypeStudyInDBBase(TypeStudyBase):
     id: Optional[int] = None
+
     class Config:
         orm_mode = True
 

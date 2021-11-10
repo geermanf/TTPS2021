@@ -8,7 +8,7 @@ Create Date: 2021-11-05 18:14:57.594106
 from alembic import op
 import sqlalchemy as sa
 import sqlalchemy_utils
-from app.models import StudyState
+from app.constants.state import StudyState
 
 # revision identifiers, used by Alembic.
 revision = '74702f97e67c'

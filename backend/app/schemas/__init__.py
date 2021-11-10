@@ -13,3 +13,6 @@ from .study import (
     TypeStudyUpdate, TypeStudy
 )
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate
+from .sample import Sample, SampleCreate, SampleUpdate, SamplePickedUp
+from .appointment import Appointment, AppointmentCreate, AppointmentUpdate
+from .sample_batch import SampleBatch, SampleBatchCreate, SampleBatchUpdate
