@@ -7,7 +7,7 @@ import sys
 
 sys.path.append(".")
 
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, just_created
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,10 +32,17 @@ def init() -> None:
         raise e
 
 
-def main() -> None:
+def main() -> bool:
     logger.info("Initializing service")
     init()
     logger.info("Service finished initializing")
+    # manera de avisar al script ppal si la db fue creada
+    import sys
+    if just_created:
+        sys.exit(1)
+    else:
+        sys.exit()
+    return just_created
 
 
 if __name__ == "__main__":
