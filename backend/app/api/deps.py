@@ -1,18 +1,25 @@
 from typing import Generator
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, Security, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-
+from app.constants.role import Role
 from app import crud, models, schemas
 from app.core import security
 from app.core.config import settings
 from app.db.session import SessionLocal
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    scopes={
+        Role.GUEST["name"]: Role.GUEST["description"],
+        Role.ADMIN["name"]: Role.ADMIN["description"],
+        Role.CONFIGURATOR["name"]: Role.CONFIGURATOR["description"],
+        Role.EMPLOYEE["name"]: Role.EMPLOYEE["description"],
+        Role.REPORTING_PHYSICIAN["name"]: Role.REPORTING_PHYSICIAN["description"],
+    }
 )
 
 
@@ -25,57 +32,49 @@ def get_db() -> Generator:
 
 
 def get_current_user(
-    db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
+    security_scopes: SecurityScopes,
+    db: Session = Depends(get_db),
+    token: str = Depends(reusable_oauth2)
 ) -> models.User:
+    if security_scopes.scopes:
+        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+    else:
+        authenticate_value = "Bearer"
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": authenticate_value},
+    )
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
+        if payload.get("id") is None:
+            raise credentials_exception
         token_data = schemas.TokenPayload(**payload)
     except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = crud.user.get(db, id=token_data.sub)
+    user = crud.user.get(db, id=token_data.id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise credentials_exception
+    if security_scopes.scopes and (
+        not token_data.role
+        or token_data.role not in security_scopes.scopes
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Not enough permissions",
+            headers={"WWW-Authenticate": authenticate_value},
+        )
     return user
 
 
 def get_current_active_user(
-    current_user: models.User = Depends(get_current_user),
+    current_user: models.User = Security(get_current_user, scopes=[]),
 ) -> models.User:
     if not crud.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Usuario inactivo")
-    return current_user
-
-
-def get_current_if_admin(
-    current_user: models.User = Depends(get_current_user),
-) -> models.User:
-    if not crud.user.is_admin(current_user):
-        raise HTTPException(
-            status_code=400, detail="Necesita ser administrador para realizar la operación."
-        )
-    return current_user
-
-
-def get_current_if_employee(
-    current_user: models.User = Depends(get_current_user),
-) -> models.User:
-    # if not crud.user.is_employee(current_user):
-    #     raise HTTPException(
-    #         status_code=400, detail="Necesita ser un empleado del laboratorio para realizar la operación."
-    #     )
-    return current_user
-
-
-def get_current_if_informant_physician(
-    current_user: models.User = Depends(get_current_user),
-) -> models.User:
-    if not crud.user.is_informant_physician(current_user):
-        raise HTTPException(
-            status_code=400, detail="Necesita ser un médico informante para realizar la operación."
-        )
     return current_user

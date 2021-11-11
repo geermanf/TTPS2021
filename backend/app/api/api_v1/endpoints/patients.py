@@ -1,17 +1,19 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-from app.crud.crud_user import (
+from app.crud import (
     UsernameAlreadyRegistered,
-    EmailAlreadyRegistered
+    EmailAlreadyRegistered,
+    DniAlreadyRegistered
 )
 from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
 from app.utils import send_new_account_email
+from app.constants.role import Role
 
 router = APIRouter()
 
@@ -21,7 +23,10 @@ def read_patients(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.Patient = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    ),
 ) -> Any:
     """
     Retrieve patients.
@@ -35,7 +40,10 @@ def create_patient(
     *,
     db: Session = Depends(deps.get_db),
     patient_in: schemas.PatientCreate,
-    current_user: models.Patient = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    ),
 ) -> Any:
     """
     Create new patient.
@@ -51,6 +59,11 @@ def create_patient(
         raise HTTPException(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
+        )
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
         )
     if settings.EMAILS_ENABLED and patient_in.email:
         send_new_account_email(
@@ -80,7 +93,7 @@ def create_patient_open(
     patient_in = schemas.PatientCreate(
         password=password, first_name=first_name, last_name=last_name)
     try:
-        patient = crud.patient.create(db, obj_in=patient_in)
+        return crud.patient.create(db, obj_in=patient_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
@@ -91,13 +104,20 @@ def create_patient_open(
             status_code=400,
             detail="El email ingresado ya se encuentra registrado",
         )
-    return patient
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
+        )
 
 
 @router.get("/{patient_id}", response_model=schemas.Patient)
 def read_patient_by_id(
     patient_id: int,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    ),
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
@@ -119,7 +139,10 @@ def update_patient(
     db: Session = Depends(deps.get_db),
     patient_id: int,
     patient_in: schemas.PatientUpdate,
-    current_user: models.User = Depends(deps.get_current_if_admin),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    ),
 ) -> Any:
     """
     Update a patient.
@@ -134,11 +157,16 @@ def update_patient(
         return crud.patient.update(db, db_obj=patient, obj_in=patient_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
-            status_code=404,
+            status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
     except EmailAlreadyRegistered:
         raise HTTPException(
-            status_code=404,
+            status_code=400,
             detail="El email ingresado ya se encuentra registrado",
+        )
+    except DniAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El dni ingresado ya se encuentra registrado",
         )

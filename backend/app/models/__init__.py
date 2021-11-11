@@ -1,6 +1,9 @@
-from .user import User, Admin, Config, InformantPhysician, Patient, Employee
-from .study import StudyState, Study, TypeStudy
+from .user import User, Admin, Config, ReportingPhysician, Patient, Employee
+from .sample import Sample
+from .study import Study, TypeStudy
+from .sample_batch import SampleBatch
 from .diagnosis import Diagnosis
 from .study_updates import StudyHistory, Report
 from .health_insurance import HealthInsurance
 from .referring_physician import ReferringPhysician
+from .appointment import Appointment

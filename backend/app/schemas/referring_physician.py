@@ -25,15 +25,12 @@ class ReferringPhysicianCreate(ReferringPhysicianBase):
     first_name: str
     last_name: str
     license: int
+    phone: str
     email: EmailStr
 
 
 class ReferringPhysicianUpdate(ReferringPhysicianBase):
-    first_name: str
-    last_name: str
-    license: int
-    email: EmailStr
-    is_active: Optional[bool] = True
+    pass
 
 
 class ReferringPhysician(ReferringPhysicianInDBBase):
