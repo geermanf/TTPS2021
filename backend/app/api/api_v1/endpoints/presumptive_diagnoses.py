@@ -30,8 +30,8 @@ def read_presumptive_diagnoses(
     return db.query(Diagnosis).offset(skip).limit(limit).all()
 
 
-@router.get("/{presumptive_diagnosis_id}", response_model=PresumptiveDiagnosis)
-def read_presumptive_diagnosis_by_id(
+@router.get("/{id}", response_model=PresumptiveDiagnosis)
+def read_by_id(
     presumptive_diagnosis_id: int,
     db: Session = Depends(deps.get_db),
 ) -> Any:

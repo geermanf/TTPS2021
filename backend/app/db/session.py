@@ -17,10 +17,12 @@ def validate_database():
                     " doesn't exist yet, let's try to create it")
         create_database(engine.url)     # Create new DB
         logger.info("Database Created")
+        just_created = True
     else:
-        print("Database Already Exists")
-    return engine
+        logger.info("Database Already Exists")
+        just_created = False
+    return (engine, just_created)
 
 
-engine = validate_database()
+engine, just_created = validate_database()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
