@@ -15,7 +15,7 @@ from app.models import Patient, Employee
 class TypeStudy(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    study_consent_template = Column(String, unique=True, nullable=False)
+    study_consent_template = Column(Text, nullable=False)
     studies = relationship(
         "Study", primaryjoin="TypeStudy.id == Study.type_study_id", back_populates="type_study")
 

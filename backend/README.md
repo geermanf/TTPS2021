@@ -8,8 +8,6 @@ PROJECT_NAME=ttps-grupo8
 SERVER_HOST=http://localhost
 ADMIN_USERNAME=changeme
 ADMIN_PASSWORD=changeme
-CONFIG_USERNAME=changeme
-CONFIG_PASSWORD=changeme
 
 # Postgres
 POSTGRES_SERVER=db

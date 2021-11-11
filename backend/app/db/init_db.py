@@ -23,7 +23,7 @@ def init_db(db: Session) -> None:
             last_name='admin'
         )
         admin = crud.admin.create(db, obj_in=admin_in)  # noqa: F841
-    
+
     ######### Cargar data inicial ###########
 
     # Diagnósticos presuntivos
@@ -346,7 +346,8 @@ def init_db(db: Session) -> None:
     db.add(models.Diagnosis(name="Trastorno de menstruación"))
     db.add(models.Diagnosis(name="Trastorno obsesivo compulsivo (TOC)"))
     db.add(models.Diagnosis(name="Trastorno por atracón"))
-    db.add(models.Diagnosis(name="Trastorno por déficit de atención e hiperactividad (TDAH)"))
+    db.add(models.Diagnosis(
+        name="Trastorno por déficit de atención e hiperactividad (TDAH)"))
     db.add(models.Diagnosis(name="Trastornos del ritmo circadiano"))
     db.add(models.Diagnosis(name="Tricomoniasis"))
     db.add(models.Diagnosis(name="Trombosis venosa (flebitis)"))
@@ -370,5 +371,35 @@ def init_db(db: Session) -> None:
     db.add(models.Diagnosis(name="Virus Zika"))
     db.add(models.Diagnosis(name="Vitíligo"))
     db.add(models.Diagnosis(name="Vulvitis"))
+
+    # Tipos de estudio
+
+    db.add(models.TypeStudy(
+        name="Exoma",
+        study_consent_template="<h3>Consentimiento informado</h3>"
+        "<h5>Titulo del estudio</h5>"
+        "<p>Estudio sobre el exoma...<p>"
+        "<h5>Objetivo del estudio</h5>"
+        "<p>En caracter de ... </p>"
+        "<h5>Riesgos</h5>"
+        "<p>Según a lo referido a las últimas investigaciones, se "
+        "ha comprobado que...</p>"
+        "<h2>AUTORIZACIÓN<h2>"
+        "<p> En caracter de ... < /p >"))
+    db.add(models.TypeStudy(
+        name="Genoma mitoclondria completo",
+        study_consent_template="<h3>Consentimiento informado</h3>"
+        "<h5>Titulo del estudio</h5>"
+        "<p>Estudio sobre Genoma mitoclondria completo...<p>"
+        "<h5>Objetivo del estudio</h5>"
+        "<p>En caracter de ... </p>"
+        "<h5>Riesgos</h5>"
+        "<p > En caracter de ... </p>"
+        "<h2>AUTORIZACIÓN<h2>"
+        "<p > En caracter de ... </p>"))
+    db.add(models.TypeStudy(
+        name="Carrier de enfermedades monogénicas recesivas", study_consent_template="wcwc"))
+    db.add(models.TypeStudy(name="Cariotipo", study_consent_template="wcwvc"))
+    db.add(models.TypeStudy(name="Array CGH", study_consent_template="wvewev"))
 
     db.commit()

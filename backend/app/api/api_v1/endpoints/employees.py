@@ -24,7 +24,7 @@ def read_employees(
     limit: int = 100,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     ),
     
 ) -> Any:
@@ -42,7 +42,7 @@ def create_employee(
     employee_in: schemas.EmployeeCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     ),
 ) -> Any:
     """
@@ -72,7 +72,7 @@ def read_employee_by_id(
     employee_id: int,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     ),
     db: Session = Depends(deps.get_db),
 ) -> Any:
@@ -97,7 +97,7 @@ def update_employee(
     employee_in: schemas.EmployeeUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     ),
 ) -> Any:
     """
