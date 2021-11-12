@@ -1,8 +1,9 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
-from app import crud, schemas
+from app import crud, models, schemas
 from app.api import deps
+from app.constants.role import Role
 
 router = APIRouter()
 
@@ -12,6 +13,10 @@ def read_referring_physician(
         db: Session = Depends(deps.get_db),
         skip: int = 0,
         limit: int = 100,
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.ADMIN["name"]],
+    ),
 ) -> Any:
     """
     Retrieve referring physician.
@@ -24,7 +29,11 @@ def read_referring_physician(
 def create_referring_physician(
         *,
         db: Session = Depends(deps.get_db),
-        referring_physician_in: schemas.ReferringPhysicianCreate
+        referring_physician_in: schemas.ReferringPhysicianCreate,
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.ADMIN["name"]],
+    ),
 ) -> Any:
     """
     Create new referring physician.
@@ -43,6 +52,10 @@ def create_referring_physician(
 def read_referring_physician_by_id(
         referring_physician_id: int,
         db: Session = Depends(deps.get_db),
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.ADMIN["name"]],
+    ),
 ) -> Any:
     """
     Get a referring physician user by id.
@@ -62,6 +75,10 @@ def update_referring_physician(
         db: Session = Depends(deps.get_db),
         referring_physician_id: int,
         referring_physician_in: schemas.ReferringPhysicianUpdate,
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.ADMIN["name"]],
+    ),
 ) -> Any:
     """
     Update a referring physician.

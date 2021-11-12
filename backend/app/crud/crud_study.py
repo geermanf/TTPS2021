@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
-from app.models import Study, SampleBatch, StudyHistory
+from app.models import Study, SampleBatch, StudyPastStates
 from app.schemas import StudyCreate, StudyUpdate
 from datetime import datetime
 
@@ -33,7 +33,7 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
     def update_state(self, db: Session, db_obj: Study, new_state: str,
                      employee_id: int, updated_date: Optional[datetime] = None) -> Study:
         # TODO: validar orden de los estados
-        history = StudyHistory(
+        history = StudyPastStates(
             study_id=db_obj.id, state=db_obj.current_state,
             state_entered_date=db_obj.current_state_entered_date,
             employee_id=employee_id)

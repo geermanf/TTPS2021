@@ -50,8 +50,8 @@ class Study(Base):
 
     budget = Column(Float)
 
-    history = relationship(
-        "StudyHistory", primaryjoin="Study.id == StudyHistory.study_id", back_populates="study")
+    past_states = relationship(
+        "StudyPastStates", primaryjoin="Study.id == StudyPastStates.study_id", back_populates="study")
 
     report = relationship(
         "Report", primaryjoin="Study.id == Report.study_id", back_populates="study", uselist=False)
@@ -81,8 +81,8 @@ class Study(Base):
     # tal vez en init
 
     def create_history(self, employee_id: int, state: Optional[str] = None):
-        from app.models import StudyHistory
-        study_history = StudyHistory(
+        from app.models import StudyPastStates
+        study_history = StudyPastStates(
             study_id=self.id,
             employee_id=employee_id,
             state=state
