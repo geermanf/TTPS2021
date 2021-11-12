@@ -15,7 +15,7 @@ from app.models import Patient, Employee
 class TypeStudy(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    study_consent_template = Column(String, unique=True, nullable=False)
+    study_consent_template = Column(Text, nullable=False)
     studies = relationship(
         "Study", primaryjoin="TypeStudy.id == Study.type_study_id", back_populates="type_study")
 
@@ -50,8 +50,8 @@ class Study(Base):
 
     budget = Column(Float)
 
-    history = relationship(
-        "StudyHistory", primaryjoin="Study.id == StudyHistory.study_id", back_populates="study")
+    past_states = relationship(
+        "StudyPastStates", primaryjoin="Study.id == StudyPastStates.study_id", back_populates="study")
 
     report = relationship(
         "Report", primaryjoin="Study.id == Report.study_id", back_populates="study", uselist=False)
@@ -81,8 +81,8 @@ class Study(Base):
     # tal vez en init
 
     def create_history(self, employee_id: int, state: Optional[str] = None):
-        from app.models import StudyHistory
-        study_history = StudyHistory(
+        from app.models import StudyPastStates
+        study_history = StudyPastStates(
             study_id=self.id,
             employee_id=employee_id,
             state=state

@@ -1,12 +1,10 @@
 from typing import Any, List
+
 from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
-from app.crud import (
-    UsernameAlreadyRegistered,
-    EmailAlreadyRegistered
-)
+from app.crud import UsernameAlreadyRegistered
 from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
@@ -16,8 +14,8 @@ from app.constants.role import Role
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Employee])
-def read_employees(
+@router.get("/", response_model=List[schemas.Configurator])
+def read_configurators(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
@@ -25,97 +23,86 @@ def read_employees(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
     ),
-    
 ) -> Any:
     """
-    Retrieve employees.
+    Retrieve configurators.
     """
-    employees = crud.employee.get_multi(db, skip=skip, limit=limit)
-    return employees
+    configurators = crud.config.get_multi(db, skip=skip, limit=limit)
+    return configurators
 
 
-@router.post("/", response_model=schemas.Employee)
-def create_employee(
+@router.post("/", response_model=schemas.Configurator)
+def create_configurator(
     *,
     db: Session = Depends(deps.get_db),
-    employee_in: schemas.EmployeeCreate,
+    configurator_in: schemas.ConfigCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
     ),
 ) -> Any:
     """
-    Create new employee.
+    Create new configurator.
     """
     try:
-        employee = crud.employee.create(db, obj_in=employee_in)
+        configurator = crud.config.create(db, obj_in=configurator_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
-    except EmailAlreadyRegistered:
-        raise HTTPException(
-            status_code=400,
-            detail="El email ingresado ya se encuentra registrado",
-        )
-    if settings.EMAILS_ENABLED and employee_in.email:
-        send_new_account_email(
-            email_to=employee_in.email, username=employee_in.username, password=employee_in.password
-        )
-    return employee
+    return configurator
 
-#mirar luego
-@router.get("/{employee_id}", response_model=schemas.Employee)
-def read_employee_by_id(
-    employee_id: int,
+
+@router.get("/{configurator_id}", response_model=schemas.Configurator)
+def read_configurator_by_id(
+    configurator_id: int,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.ADMIN["name"], Role.EMPLOYEE["name"]],
+        scopes=[Role.ADMIN["name"], Role.CONFIGURATOR["name"]],
     ),
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
-    Get a specific employee by id.
+    Get a specific configurator by id.
     """
-    employee = crud.employee.get(db, id=employee_id)
-    if not employee:
+    configurator = crud.config.get(db, id=configurator_id)
+    if not configurator:
         raise HTTPException(
             status_code=404,
-            detail="El empleado con el id ingresado no existe en el sistema",
+            detail="El configurador con el id ingresado no existe en el sistema",
         )
-    if employee != current_user:
+    if configurator != current_user:
         raise HTTPException(
             status_code=400, detail="Usted no tiene los permisos suficientes"
         )
-    return employee
+    return configurator
 
 
-@router.put("/{employee_id}", response_model=schemas.Employee) #TODO: validar que el username no corresponda a otro
-def update_employee(
+@router.put("/{configurator_id}", response_model=schemas.Configurator)
+def update_configurator(
     *,
     db: Session = Depends(deps.get_db),
-    employee_id: int,
-    employee_in: schemas.EmployeeUpdate,
+    configurator_id: int,
+    configurator_in: schemas.ConfigUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
     ),
 ) -> Any:
     """
-    Update an employee.
+    Update a configurator.
     """
-    employee = crud.employee.get(db, id=employee_id)
-    if not employee:
+    configurator = crud.config.get(db, id=configurator_id)
+    if not configurator:
         raise HTTPException(
             status_code=404,
-            detail="The employee with this id does not exist in the system",
+            detail="El configurador con el id ingresado no existe en el sistema",
         )
     try:
-        employee = crud.employee.update(db, db_obj=employee, obj_in=employee_in)
+        return crud.config.update(db, db_obj=configurator, obj_in=configurator_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
             detail="El username ingresado ya se encuentra registrado",
         )
-    return employee

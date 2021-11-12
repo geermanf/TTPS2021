@@ -5,12 +5,13 @@ from app.api.api_v1.endpoints import (
     studies, health_insurances, utils,
     reporting_physicians, referring_physicians,
     type_studies, presumptive_diagnoses,
-    samples, sample_batches
+    samples, sample_batches, configurators
 )
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["Login"])
 api_router.include_router(utils.router, prefix="/utils", tags=["Utils"])
+api_router.include_router(configurators.router, prefix="/configurators", tags=["Configurators"])
 api_router.include_router(employees.router, prefix="/employees", tags=["Employees"])
 api_router.include_router(patients.router, prefix="/patients", tags=["Patients"])
 api_router.include_router(referring_physicians.router, prefix="/referring-physician", tags=["Referring Physicians"])

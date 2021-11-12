@@ -1,0 +1,2 @@
+#se ejecuta todos los dias a las 7 de la mañana
+00 07 * * * /usr/local/bin/python /app/tasks.py > /proc/1/fd/1 2>/proc/1/fd/2

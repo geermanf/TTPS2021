@@ -6,6 +6,7 @@ from fastapi.responses import Response
 from app import crud, schemas
 from app.api import deps
 from weasyprint.text.fonts import FontConfiguration
+from app.constants.css import CSS as Css
 
 router = APIRouter()
 
@@ -87,7 +88,11 @@ def generate_pdf(
     """
       Return a pdf with consent template text.
     """
+    font_config = FontConfiguration()
     type_study = crud.type_study.get(db, id=type_study_id)
-    html = HTML(string= type_study.study_consent_template,  encoding='UTF-8')
+    html = HTML(string=type_study.study_consent_template,
+               encoding='UTF-8')
+    css = CSS(string=Css.CSS, font_config=font_config)
 
-    return Response(content=html.write_pdf(), media_type="application/pdf")
+    return Response(content=html.write_pdf(stylesheets=[css],
+    font_config=font_config), media_type="application/pdf")

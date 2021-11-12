@@ -79,8 +79,6 @@ class Settings(BaseSettings):
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
     ADMIN_USERNAME: str
     ADMIN_PASSWORD: str
-    CONFIG_USERNAME: str
-    CONFIG_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = False
 
     class Config:
