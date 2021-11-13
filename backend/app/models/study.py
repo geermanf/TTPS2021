@@ -77,14 +77,3 @@ class Study(Base):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.current_state = StudyState.STATE_ONE
-
-    # tal vez en init
-
-    def create_history(self, employee_id: int, state: Optional[str] = None):
-        from app.models import StudyPastStates
-        study_history = StudyPastStates(
-            study_id=self.id,
-            employee_id=employee_id,
-            state=state
-        )
-        return study_history

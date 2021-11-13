@@ -30,9 +30,15 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
             .all()
         )
 
-    def update_state(self, db: Session, db_obj: Study, new_state: str,
-                     employee_id: int, updated_date: Optional[datetime] = None) -> Study:
-        # TODO: validar orden de los estados
+    def update_state(
+        self,
+        db: Session,
+        db_obj: Study,
+        new_state: str,
+        employee_id: Optional[int] = None,
+        updated_date: Optional[datetime] = None
+    ) -> Study:
+        # TODO: validar orden de los estados para hacerlo más robusto (en la api ya lo hace)
         history = StudyPastStates(
             study_id=db_obj.id, state=db_obj.current_state,
             state_entered_date=db_obj.current_state_entered_date,

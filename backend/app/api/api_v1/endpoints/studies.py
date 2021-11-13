@@ -58,6 +58,7 @@ def create_study(
 @router.put("/{id}", response_model=schemas.Study)
 def update_study(
     id: int,
+    study_in: schemas.StudyUpdate,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -71,7 +72,7 @@ def update_study(
     if not study:
         raise HTTPException(
             status_code=404, detail="No se encontró el estudio.")
-    if not crud.user.is_admin(current_user) and (study.owner_id != current_user.id):
+    if not crud.user.is_admin(current_user) and (study.employee_id != current_user.id):
         raise HTTPException(
             status_code=400, detail="No tiene permisos para la acción solicitada.")
     study = crud.study.update(db=db, db_obj=study, obj_in=study_in)
