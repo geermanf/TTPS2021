@@ -27,6 +27,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'studies',
+        loadChildren: () =>
+          import('../modules/study/study.module').then(
+            (m) => m.StudyModule
+          ),
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',
