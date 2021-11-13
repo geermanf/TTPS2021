@@ -7,16 +7,16 @@ from app.db.base_class import Base
 from app.models import Employee, ReportingPhysician
 
 
-class StudyHistory(Base):
+class StudyPastStates(Base):
     id = Column(Integer, primary_key=True, index=True)
     study_id = Column(Integer, ForeignKey("study.id"))
     study = relationship(
-        "Study", primaryjoin="StudyHistory.study_id == Study.id", back_populates="history")
+        "Study", primaryjoin="StudyPastStates.study_id == Study.id", back_populates="past_states")
     state = Column(String)
     state_entered_date = Column(DateTime(timezone=True))
     employee_id = Column(Integer, ForeignKey(Employee.id))
     employee = relationship(
-        "Employee", primaryjoin="StudyHistory.employee_id == Employee.id", back_populates="studies_updated")
+        "Employee", primaryjoin="StudyPastStates.employee_id == Employee.id", back_populates="studies_updated")
 
 
 class Report(Base):

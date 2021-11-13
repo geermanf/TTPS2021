@@ -45,7 +45,22 @@ services:
       dockerfile: backend.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-    command: ./startup.sh
+    command: bash startup.sh
+  
+  cron:
+    container_name: cron_backend
+    depends_on:
+      - db
+    links:
+      - db
+    env_file:
+      - .env
+    build:
+      context: ./backend
+      dockerfile: cron.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    restart: unless-stopped
 
 volumes:
     postgres:

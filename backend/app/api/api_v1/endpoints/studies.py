@@ -176,10 +176,11 @@ def download_consent(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    # FIXME: deberia validar que esté en STATE_TWO
-    study = retrieve_study(db, id, expected_state=None)
-    pdf = HTML(string='<h3>Consentimiento para estudio X</h3><p>En caracter de ...</p>',
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_TWO)
+    type_study = crud.type_study.get(db, id=study.type_study_id)
+    pdf = HTML(string=type_study.study_consent_template,
                encoding='UTF-8').write_pdf()
+    # al descargarse, se espera que el paciente lo devuelva firmado
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_THREE, employee_id=current_user.id)
     return Response(content=pdf, media_type="application/pdf")

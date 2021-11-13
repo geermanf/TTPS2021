@@ -64,7 +64,7 @@ class StudyInDBBase(StudyBase):
     signed_consent: Optional[str] = None
     appointment: Optional[Appointment] = None
     report: Optional[Report] = None
-    # history
+    # past_states
     sample: Optional[Sample] = None
 
     class Config:
