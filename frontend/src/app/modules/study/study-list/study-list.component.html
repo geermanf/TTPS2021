@@ -77,13 +77,16 @@
                   class="svg-icon svg-icon-md svg-icon-primary">
                   </span>
                 </a>
-                <!-- <a title="Borrar" class="btn btn-icon btn-light btn-hover-danger btn-sm"
-                  (click)="delete(patient.id)">
-                  <span [inlineSVG]="'./assets/media/svg/icons/General/Trash.svg'" cacheSVG="true"
-                    class="svg-icon svg-icon-md svg-icon-danger">
-                  </span>
-                </a> -->
               </td>
+              <td>
+                <a *ngIf="study.current_state === studyState.STATE_THREE" title="Subir consentimiento firmado" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                (click)="downloadConsent(study.type_study.id)">
+                  <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true"
+                  class="svg-icon svg-icon-md svg-icon-primary">
+                  </span>
+                </a>
+              </td>
+
             </tr>
           </tbody>
         </table>
