@@ -12,6 +12,8 @@ import { StudyRoutingModule } from './study-routing.module';
 import { StudyComponent } from './study.component';
 import { StudyListComponent } from './study-list/study-list.component';
 import { SharedModule } from '../shared/shared.module';
+import { ConsentUploadModalComponent } from './study-list/components/consent-upload-modal/consent-upload-modal.component';
+import { AngularFileUploaderModule } from 'angular-file-uploader';
 
 
 @NgModule({
@@ -19,6 +21,7 @@ import { SharedModule } from '../shared/shared.module';
     StudyComponent,
     StudyListComponent,
     EditStudyModalComponent,
+    ConsentUploadModalComponent
   ],
   imports: [
     CommonModule,
@@ -30,10 +33,13 @@ import { SharedModule } from '../shared/shared.module';
     NgbModalModule,
     NgbDatepickerModule,
     SharedModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    AngularFileUploaderModule
+    
   ],
   entryComponents: [
     EditStudyModalComponent,
+    ConsentUploadModalComponent
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })

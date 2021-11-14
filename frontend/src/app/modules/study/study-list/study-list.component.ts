@@ -19,7 +19,10 @@ import {
 import { EditStudyModalComponent } from './components/edit-study-modal/edit-study-modal.component';
 import { StudyListService, StudyService } from '../_services/study.service';
 import { StudyState } from '../_models/study.model';
-
+import { ConsentUploadModalComponent } from './components/consent-upload-modal/consent-upload-modal.component';
+import * as jQuery from 'jquery';
+import 'bootstrap-notify';
+let $: any = jQuery;
 @Component({
   selector: 'app-study-list',
   templateUrl: './study-list.component.html',
@@ -154,6 +157,17 @@ export class StudyListComponent
       const fileURL = URL.createObjectURL(blobConsent);
       window.open(fileURL, '_blank');
     });
+  }
+
+  uploadConsent(idStudy: number) {
+    const modalRef = this.modalService.open(ConsentUploadModalComponent, { size: 'xl' });
+    modalRef.componentInstance.id = idStudy;
+    modalRef.result.then(() =>
+      this.studyListService.fetch(),
+      () => { 
+
+      }
+    );
   }
 
 }

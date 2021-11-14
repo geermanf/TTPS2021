@@ -2,21 +2,16 @@ import { Component, Injectable, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   NgbActiveModal,
-  NgbDateParserFormatter,
   NgbDatepickerConfig,
 } from "@ng-bootstrap/ng-bootstrap";
 import { of, Subscription } from "rxjs";
-import { catchError, finalize, first, tap } from "rxjs/operators";
+import { catchError, first, tap } from "rxjs/operators";
 import { Diagnosis, Study, StudyList, StudyState, TypeStudy } from "../../../_models/study.model";
 import { StudyService } from "../../../_services";
-import {
-  CustomDateParserFormatter,
-} from "../../../../../_metronic/core";
 import { ValidationErrors } from "src/app/modules/shared/validation-errors";
 import { PatientService } from "src/app/modules/patient/_services";
 import { Patient } from "src/app/modules/patient/_models/patient.model";
 import { Items } from "src/app/modules/shared/utils/items.model";
-import { stringify } from "querystring";
 import { DiagnosisService, StudyListService, TypeStudyService } from "../../../_services/study.service";
 import { ReferringPhysicianService } from "src/app/modules/referring_physician/_services";
 import { ReferringPhysician } from "src/app/modules/referring_physician/_models/referring-physician.model";
@@ -26,9 +21,6 @@ const EMPTY_STUDY = Study.getEmpty();
 @Component({
   selector: "app-edit-study-modal",
   templateUrl: "./edit-study-modal.component.html",
-  providers: [
-    { provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter },
-  ],
 })
 export class EditStudyModalComponent implements OnInit, OnDestroy {
   @Input() id: number;
@@ -53,12 +45,8 @@ export class EditStudyModalComponent implements OnInit, OnDestroy {
     private diagnosisService: DiagnosisService,
     private studyListService: StudyListService, 
     
-  ) {
-    // customize default values of datepickers used by this component tree
-    config.minDate = { year: 1900, month: 1, day: 1 };
-    let now = new Date();
-    config.maxDate = { year: now.getFullYear(), month: 12, day: 31 };
-  }
+  ) {}
+  
   ngOnInit(): void {
     this.isLoading$ = this.studyService.isLoading$;
     this.loadStudy();

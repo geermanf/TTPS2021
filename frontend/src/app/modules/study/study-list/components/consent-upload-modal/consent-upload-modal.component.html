@@ -1,0 +1,26 @@
+<div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title h4" id="example-modal-sizes-title-lg">
+        <ng-container>
+          Registrar Consentimiento
+        </ng-container>
+      </div>
+    </div>
+    <div 
+      class="overlay overlay-block cursor-default modal-body" style="min-height: 200px" >
+     <ng-container>
+        <h3>Consentimiento</h3>
+        <angular-file-uploader 
+             [config]="afuConfig"
+             [resetUpload]=true
+             (ApiResponse)="consentUploadSuccessfully($event)">
+        </angular-file-uploader>
+     </ng-container>
+     
+    </div>
+        <div class="modal-footer">
+      <button type="button"class="btn btn-light btn-elevate mr-2"  (click)="modal.dismiss()" >
+        Cancelar
+      </button>
+    </div>
+  </div>

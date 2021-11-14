@@ -29,7 +29,8 @@ import { SelectFormComponent } from "./select-form";
   exports: [
     InputFormComponent,
     DatePickerFormComponent,
-    SelectFormComponent
+    SelectFormComponent,
+    CommonModule
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })
