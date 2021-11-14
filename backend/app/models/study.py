@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.base_class import Base
 from .diagnosis import Diagnosis
-from app.constants.state import StudyState
 from app.models import Patient, Employee
 
 
@@ -51,7 +50,7 @@ class Study(Base):
     budget = Column(Float)
 
     past_states = relationship(
-        "StudyPastStates", primaryjoin="Study.id == StudyPastStates.study_id", back_populates="study")
+        "StudyStates", primaryjoin="Study.id == StudyStates.study_id", back_populates="study")
 
     report = relationship(
         "Report", primaryjoin="Study.id == Report.study_id", back_populates="study", uselist=False)
@@ -63,7 +62,7 @@ class Study(Base):
 
 
     current_state = Column(String, nullable=False)
-    current_state_entered_date = Column(DateTime(timezone=True))
+    current_state_entered_date = Column(DateTime(timezone=True)) # TODO: eliminar??... lo tengo en el historico
 
     sample = relationship("Sample", primaryjoin="Study.id == Sample.study_id",
                           back_populates="study", uselist=False)
@@ -73,18 +72,3 @@ class Study(Base):
 
     appointment = relationship(
         "Appointment", primaryjoin="Study.id == Appointment.study_id", back_populates="study", uselist=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.current_state = StudyState.STATE_ONE
-
-    # tal vez en init
-
-    def create_history(self, employee_id: int, state: Optional[str] = None):
-        from app.models import StudyPastStates
-        study_history = StudyPastStates(
-            study_id=self.id,
-            employee_id=employee_id,
-            state=state
-        )
-        return study_history
