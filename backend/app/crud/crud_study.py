@@ -3,13 +3,14 @@ from sqlalchemy.sql import func
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
-from app.models import Study, SampleBatch, StudyPastStates
+from app.models import Study, SampleBatch, StudyStates
 from app.schemas import StudyCreate, StudyUpdate
+from app.constants.state import StudyState
 from datetime import datetime
 
 
 class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
-    def create_with_owner(
+    def create(
         self, db: Session, *, obj_in: StudyCreate, employee_id: int
     ) -> Study:
         obj_in_data = jsonable_encoder(obj_in)
@@ -17,38 +18,35 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        self.update_state(
+            db=db, db_obj=db_obj, new_state=StudyState.STATE_ONE,
+            employee_id=employee_id, entry_date=created_date)
         return db_obj
 
     def get_multi_by_owner(
         self, db: Session, *, employee_id: int, skip: int = 0, limit: int = 100
     ) -> List[Study]:
         return (
-            db.query(self.model)
+            db.query(Study)
             .filter(Study.employee_id == employee_id)
             .offset(skip)
             .limit(limit)
             .all()
         )
 
-    def update_state(
-        self,
-        db: Session,
-        db_obj: Study,
-        new_state: str,
-        employee_id: Optional[int] = None,
-        updated_date: Optional[datetime] = None
-    ) -> Study:
-        # TODO: validar orden de los estados para hacerlo más robusto (en la api ya lo hace)
-        history = StudyPastStates(
-            study_id=db_obj.id, state=db_obj.current_state,
-            state_entered_date=db_obj.current_state_entered_date,
-            employee_id=employee_id)
-        db.add(history)
-        db_obj.current_state = new_state
-        if updated_date is None:
+    def update_state(self, db: Session, db_obj: Study, new_state: str,
+                     employee_id: int, entry_date: Optional[datetime] = None) -> Study:
+        # TODO: validar orden de los estados (para hacerlo más robusto)
+        if entry_date is None:
             date_time = func.now()
         else:
-            date_time = updated_date
+            date_time = entry_date
+        study_new_state = StudyStates(
+            study_id=db_obj.id, state=new_state,
+            state_entered_date=date_time,
+            employee_id=employee_id)
+        db.add(study_new_state)
+        db_obj.current_state = new_state
         db_obj.updated_date = date_time
         db_obj.current_state_entered_date = date_time
         SampleBatch.new_if_qualifies(new_state=new_state, db=db)

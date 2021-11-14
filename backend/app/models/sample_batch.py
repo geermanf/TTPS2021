@@ -22,7 +22,7 @@ class SampleBatch(Base):
 
     @classmethod
     def new_if_qualifies(cls, new_state: str, db: Session):
-        if new_state == StudyState.STATE_SEVEN:
+        if new_state == StudyState.STATE_SIX:
             samples = db.query(Sample).join(Study).filter(
                 Study.current_state == new_state
             ).all()
@@ -31,4 +31,4 @@ class SampleBatch(Base):
                 db.add(batch)
                 for sample in samples:
                     sample.sample_batch = batch
-                    sample.study.current_state = StudyState.STATE_EIGHT
+                    sample.study.current_state = StudyState.STATE_SEVEN

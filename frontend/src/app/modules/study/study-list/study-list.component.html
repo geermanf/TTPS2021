@@ -1,0 +1,98 @@
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+      <div class="card-title">
+        <h3 class="card-label">Estudios</h3>
+      </div>
+      <div class="card-toolbar">
+        <button type="button" class="btn btn-primary" (click)="create()">Crear estudio</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- begin: Filtration form -->
+      <div class="form form-label-right">
+        <div class="form-group row">
+          <form class="col-lg-6" [formGroup]="searchGroup">
+            <input type="text" class="form-control" name="searchText" placeholder="Buscar" value=""
+              formControlName="searchTerm" /><small class="form-text text-muted"><b>Buscar</b> en todos los campos</small>
+          </form>
+        </div>
+      </div>
+      <!-- end: Filtration form -->
+      <!-- begin:Table -->
+      <div class="table-responsive angular-bootstrap-table">
+        <table class="table table-head-custom table-vertical-center overflow-hidden">
+          <thead>
+            <th>
+              Tipo de estudio
+              <app-sort-icon column="type_study" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>
+              Estado actual
+              <app-sort-icon column="current_state" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>
+              Paciente
+              <app-sort-icon column="patient" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>
+              Médico derivante
+              <app-sort-icon column="referring_physician" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>
+                Diagnóstico presuntivo
+                <app-sort-icon column="presumptive_diagnosis" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                  (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>
+                Presupuesto
+                <app-sort-icon column="budget" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                  (sort)="sort($event)"></app-sort-icon>
+            </th>
+            <th>Acciones</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let study of studyListService.items$ | async">
+              <td>{{ study.type_study.name }}</td>
+              <td>{{ study.current_state}}</td>
+              <td>{{ study.patient.first_name }} {{ study.patient.first_name }} </td>
+              <td>{{ study.referring_physician.first_name }} {{ study.referring_physician.first_name }} </td>
+              <td>{{ study.presumptive_diagnosis.name }}</td>
+              <td>{{ study.budget }}</td>
+              <td>
+                  <a title="Editar" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                  (click)="edit(study.id)">
+                  <span [inlineSVG]="'./assets/media/svg/icons/Communication/Write.svg'" cacheSVG="true"
+                    class="svg-icon svg-icon-md svg-icon-primary">
+                  </span>
+                </a>
+               </td>  
+              <td>
+                <a *ngIf="study.current_state === studyState.STATE_ONE" title="Descargar consentimiento" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                (click)="downloadConsent(study.type_study.id)">
+                  <span [inlineSVG]="'./assets/media/svg/files/doc.svg'" cacheSVG="true"
+                  class="svg-icon svg-icon-md svg-icon-primary">
+                  </span>
+                </a>
+              </td>
+              <td>
+                <a *ngIf="study.current_state === studyState.STATE_TWO" title="Subir consentimiento firmado" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                (click)="downloadConsent(study.type_study.id)">
+                  <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true"
+                  class="svg-icon svg-icon-md svg-icon-primary">
+                  </span>
+                </a>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- end: Table -->
+      <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" [paginator]="paginator"
+        [isLoading]="isLoading" (paginate)="paginate($event)"></app-paginator>
+    </div>
+  </div>

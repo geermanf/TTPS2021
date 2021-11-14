@@ -10,7 +10,8 @@ from .user import (
 from .health_insurance import HealthInsurance, HealthInsuranceCreate, HealthInsuranceInDB, HealthInsuranceUpdate
 from .study import (
     Study, StudyCreate, StudyInDB, StudyUpdate,
-    TypeStudyCreate, TypeStudyUpdate, TypeStudy
+    TypeStudyCreate, TypeStudyUpdate, TypeStudy,
+    StudyStatesCreate, StudyStatesUpdate, StudyStates
 )
 from .report import Report, ReportCreate, ReportUpdate
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate

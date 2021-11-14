@@ -8,22 +8,29 @@ from .appointment import Appointment
 from .report import Report
 
 
-
-class HistoryBase(BaseModel):
+class StudyStatesBase(BaseModel):
     study_id: int
     employee_id: int
-    state: Any
+    state: str
     state_entered_date: datetime
 
 
-class HistoryInDBBase(HistoryBase):
+class StudyStatesCreate(StudyStatesBase):
+    pass
+
+
+class StudyStatesUpdate(StudyStatesBase):
+    pass
+
+
+class StudyStatesInDBBase(StudyStatesBase):
     id: int
 
     class Config:
         orm_mode = True
 
 
-class History(HistoryInDBBase):
+class StudyStates(StudyStatesInDBBase):
     pass
 
 

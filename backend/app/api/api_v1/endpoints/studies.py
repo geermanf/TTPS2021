@@ -50,7 +50,7 @@ def create_study(
     """
     Create new study.
     """
-    study = crud.study.create_with_owner(
+    study = crud.study.create(
         db=db, obj_in=study_in, employee_id=current_user.id)
     return study
 
@@ -138,16 +138,9 @@ async def payment_receipt(
     db: Session = Depends(deps.get_db)
 ) -> Any:
     study = retrieve_study(db, id, expected_state=StudyState.STATE_ONE)
-
-    # aca recibimos el archivo de comprobante de pago...
-    # una vez que se subio, habilitar un boton que permita
-    # descargar el consentimiento.
-
     study.payment_receipt = file.filename
-
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_TWO, employee_id=current_user.id)
-
     return {"filename": file.filename}
 
 
@@ -177,13 +170,9 @@ def download_consent(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_TWO)
     type_study = crud.type_study.get(db, id=study.type_study_id)
     pdf = HTML(string=type_study.study_consent_template,
                encoding='UTF-8').write_pdf()
-    # al descargarse, se espera que el paciente lo devuelva firmado
-    crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_THREE, employee_id=current_user.id)
     return Response(content=pdf, media_type="application/pdf")
 
 
@@ -197,10 +186,10 @@ async def signed_consent(
     file: UploadFile = File(...),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_THREE)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_TWO)
     study.signed_consent = file.filename
     crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_FOUR, employee_id=current_user.id)
+        db=db, db_obj=study, new_state=StudyState.STATE_THREE, employee_id=current_user.id)
     return {"filename": file.filename}
 
 
@@ -214,7 +203,7 @@ def register_appointment(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_FOUR)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_THREE)
     try:
         appointment = crud.appointment.create(
             db=db, study_id=study.id, obj_in=appointment_in)
@@ -224,7 +213,7 @@ def register_appointment(
             detail="El estudio ya registra un turno",
         )
     crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_FIVE, employee_id=current_user.id)
+        db=db, db_obj=study, new_state=StudyState.STATE_FOUR, employee_id=current_user.id)
     return appointment
 
 
@@ -238,7 +227,7 @@ def register_sample(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_FIVE)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_FOUR)
     try:
         sample = crud.sample.create(db=db, study_id=id, obj_in=sample_in)
     except StudyAlreadyWithSample:
@@ -247,7 +236,7 @@ def register_sample(
             detail="El estudio ya registra una muestra"
         )
     crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_SIX, employee_id=current_user.id)
+        db=db, db_obj=study, new_state=StudyState.STATE_FIVE, employee_id=current_user.id)
     return sample
 
 
@@ -270,9 +259,8 @@ def register_sample(
 #             detail="El estudio ya registra una muestra"
 #         )
 #     crud.study.update_state(
-#         db=db, db_obj=study, new_state=StudyState.STATE_SEVEN, employee_id=current_user.id)
+#         db=db, db_obj=study, new_state=StudyState.STATE_SIX, employee_id=current_user.id)
 #     return sample
-
 
 
 @router.post("/{id}/register-sample-pickup")
@@ -285,7 +273,7 @@ def register_sample_pickup(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_SIX)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_FIVE)
     try:
         sample = crud.sample.register_extractionist(
             db=db, db_obj=study.sample, picked_up_by=picked_up_by)
@@ -293,7 +281,7 @@ def register_sample_pickup(
         raise HTTPException(
             status_code=400, detail="La muestra ya fue recogida.")
     crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_SEVEN,
+        db=db, db_obj=study, new_state=StudyState.STATE_SIX,
         employee_id=current_user.id, updated_date=sample.picked_up_date)
     # no informa si se creó un lote
     return {"El retiro de la muestra fue registrado"}
@@ -309,10 +297,10 @@ def add_report(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_NINE)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_EIGHT)
     report = crud.report.create(db=db, study_id=study.id, obj_in=report_in)
     crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_TEN,
+        db=db, db_obj=study, new_state=StudyState.STATE_NINE,
         employee_id=current_user.id, updated_date=report.date_report)
     return report
 
@@ -327,17 +315,16 @@ def send_report(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    study = retrieve_study(db, id, expected_state=StudyState.STATE_TEN)
+    study = retrieve_study(db, id, expected_state=StudyState.STATE_NINE)
     referring_physician = crud.referring_physician.get_by_email(
         db=db, email=email)
     if not referring_physician:
         raise HTTPException(
             status_code=400, detail="El email no corresponde a un médico derivante registrado.")
     # TODO: generar pdf y enviarlo al email ingresado
-    report = study.report
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_ENDED,
-        employee_id=current_user.id, updated_date=report.date_report)
+        employee_id=current_user.id)
     return {"El reporte fue enviado exitosamente."}
 
 
@@ -350,13 +337,26 @@ def download_consent(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    # FIXME: deberia validar que esté en STATE_TWO o STATE_THREE
-    study = retrieve_study(db, id, expected_state=None)
+    study = retrieve_study(db, id)
+    # TODO: en base al tipo de estudio, devolver el consentimiento
     pdf = HTML(string='<h3>Consentimiento para estudio X</h3><p>En caracter de ...</p>',
                encoding='UTF-8').write_pdf()
-    crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_THREE, employee_id=current_user.id)
     return Response(content=pdf, media_type="application/pdf")
+
+
+@router.get("/{id}/study-history", response_model=List[schemas.StudyStates])
+def study_history(
+    id: int,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]]
+    ),
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    study = retrieve_study(db, id)
+    study_states = crud.study_states.get_multi_by_study(
+        db=db, study_id=study.id)
+    return study_states
 
 
 # @router.delete("/{id}", response_model=schemas.Study)

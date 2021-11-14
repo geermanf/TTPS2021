@@ -17,7 +17,7 @@ from sqlalchemy.event import listens_for
 if TYPE_CHECKING:
     from .health_insurance import HealthInsurance  # noqa: F401
     from .study import Study  # noqa: F401
-    from .study_updates import StudyPastStates  # noqa: F401
+    from .study_updates import StudyStates  # noqa: F401
 
 
 def receive_mapper_configured(mapper, class_):
@@ -110,7 +110,7 @@ class Employee(User):
         "Study", primaryjoin="Employee.id == Study.employee_id", back_populates="patient")
 
     studies_updated = relationship(
-        "StudyPastStates", primaryjoin="Employee.id == StudyPastStates.employee_id", back_populates="employee")
+        "StudyStates", primaryjoin="Employee.id == StudyStates.employee_id", back_populates="employee")
 
     __mapper_args__ = {
         'polymorphic_identity': Role.EMPLOYEE["name"]

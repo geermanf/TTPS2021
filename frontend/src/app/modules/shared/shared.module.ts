@@ -1,3 +1,4 @@
+
 import { CommonModule } from "@angular/common";
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -6,13 +7,15 @@ import { InlineSVGModule } from "ng-inline-svg";
 import { CRUDTableModule } from "src/app/_metronic/shared/crud-table";
 import { DatePickerFormComponent } from "./date-picker-form";
 import { InputFormComponent } from "./input-form";
+import { SelectFormComponent } from "./select-form";
 
 
 
 @NgModule({
   declarations: [
     InputFormComponent,
-    DatePickerFormComponent
+    DatePickerFormComponent,
+    SelectFormComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +28,8 @@ import { InputFormComponent } from "./input-form";
   ],
   exports: [
     InputFormComponent,
-    DatePickerFormComponent
+    DatePickerFormComponent,
+    SelectFormComponent
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })
