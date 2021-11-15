@@ -27,15 +27,15 @@ services:
     links:
       - db
     restart: unless-stopped
-  
+
   backend:
     container_name: fastapi_backend
     ports:
       - "8000:8000"
     depends_on:
       - db
-    env_file:
-      - .env
+    volumes:
+      - ./.env:/.env:ro
     #environment:
       #- SERVER_NAME=${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
@@ -45,16 +45,15 @@ services:
       dockerfile: backend.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-    command: bash startup.sh
-  
+
   cron:
     container_name: cron_backend
     depends_on:
       - db
     links:
       - db
-    env_file:
-      - .env
+    volumes:
+      - ./.env:/.env:ro
     build:
       context: ./backend
       dockerfile: cron.dockerfile

@@ -20,7 +20,7 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
         db.refresh(db_obj)
         self.update_state(
             db=db, db_obj=db_obj, new_state=StudyState.STATE_ONE,
-            employee_id=employee_id, entry_date=created_date)
+            employee_id=employee_id, entry_date=db_obj.created_date)
         return db_obj
 
     def get_multi_by_owner(
