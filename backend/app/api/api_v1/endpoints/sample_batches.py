@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, Body
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.api import deps
@@ -64,7 +64,7 @@ def read_batch(
 @router.post("/{id}/mark-as-processed", response_model=schemas.SampleBatch)
 def mark_batch_as_processed(
     id: int,
-    url: str,
+    url: str = Body(...),
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]]

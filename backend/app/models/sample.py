@@ -12,7 +12,7 @@ class Sample(Base):
         back_populates="sample")
     ml_extracted = Column(Float)
     freezer_number = Column(Integer)
-    picked_up_by = Column(String, default="aun sin retirar")
+    picked_up_by = Column(String, default=None)
     picked_up_date = Column(DateTime(timezone=True))
     sample_batch_id = Column(Integer, ForeignKey('samplebatch.id'))
     sample_batch = relationship("SampleBatch")

@@ -32,7 +32,6 @@ def read_reporting_physicians(
     reportings = crud.reporting_physician.get_multi(db, skip=skip, limit=limit)
     return reportings
 
-# TODO: current_user no se usa, asi que llamar adentro para validar permiso
 
 
 @router.post("/", response_model=schemas.ReportingPhysician)
@@ -42,7 +41,7 @@ def create_reporting_physician(
     reporting_in: schemas.ReportingCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     )
 ) -> Any:
     """
@@ -89,7 +88,7 @@ def update_reporting_physician(
     reporting_in: schemas.ReportingUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.CONFIGURATOR["name"]],
+        scopes=[Role.ADMIN["name"]],
     )
 ) -> Any:
     """

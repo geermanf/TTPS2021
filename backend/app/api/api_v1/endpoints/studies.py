@@ -186,6 +186,7 @@ def download_consent(
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
+    study = retrieve_study(db, id)
     type_study = crud.type_study.get(db, id=study.type_study_id)
     pdf = HTML(string=type_study.study_consent_template,
                encoding='UTF-8').write_pdf()
@@ -298,7 +299,7 @@ def register_sample_pickup(
             status_code=400, detail="La muestra ya fue recogida.")
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_SIX,
-        employee_id=current_user.id, updated_date=sample.picked_up_date)
+        employee_id=current_user.id, entry_date=sample.picked_up_date)
     # no informa si se creó un lote
     return {"El retiro de la muestra fue registrado"}
 

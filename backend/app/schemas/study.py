@@ -9,9 +9,9 @@ from .report import Report
 
 
 class StudyStateBase(BaseModel):
-    employee: UserBase
-    state: str
-    state_entered_date: datetime
+    employee: Optional[UserBase] = None
+    state: Optional[str] = None
+    state_entered_date: Optional[datetime] = None
 
 
 class StudyStateCreate(StudyStateBase):
@@ -70,7 +70,7 @@ class StudyInDBBase(StudyBase):
     signed_consent: Optional[str] = None
     appointment: Optional[Appointment] = None
     report: Optional[Report] = None
-    states: Optional[StudyState]
+    states: Optional[List[StudyState]] = None
     sample: Optional[Sample] = None
 
     class Config:
