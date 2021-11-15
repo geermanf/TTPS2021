@@ -9,7 +9,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { HttpEventType } from '@angular/common/http';
-import 'material-icons/iconfont/material-icons.css';
 import { CrudOperation } from 'src/app/modules/shared/utils/crud-operation.model';
 
 let $: any = jQuery;
