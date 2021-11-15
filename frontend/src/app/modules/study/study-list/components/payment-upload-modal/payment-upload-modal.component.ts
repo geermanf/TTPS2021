@@ -22,6 +22,7 @@ let $: any = jQuery;
     @ViewChild('labelUpload')
     labelImport: ElementRef;
     public isUploaded = false;
+    public  isError = false;
 
     ngOnInit(): void {
       this.uploadForm = this.formBuilder.group({
@@ -42,9 +43,10 @@ let $: any = jQuery;
         const formData = new FormData();
         formData.append('file', this.uploadForm.get('file').value);
         const upload$ = this.studyService.uploadPaymentReceipt(formData,this.idStudy).subscribe(response => {
-        // this.modal.close({status:CrudOperation.SUCCESS})
-        this.isUploaded = true;
-        });
+            this.isUploaded = true;
+        },
+        (error) =>{ this.isError = true}
+        );
       }
   
     downloadConsent() {

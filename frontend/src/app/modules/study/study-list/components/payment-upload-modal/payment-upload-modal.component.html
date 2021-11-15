@@ -24,13 +24,19 @@
             <span> Se ha registrado exitosamente el comprobante de pago. Haga click <b><span style="cursor: pointer; " (click)="downloadConsent()">aquí</span></b> para descargar el consentimiento del estudio</span>
         </div>
       </div>
+      <div *ngIf="isError">
+        <div class="alert alert-danger" role="alert">
+            <span> Ha ocurrido un error, por favor vuelva a intenar <b><span style="cursor: pointer; " (click)="downloadConsent()">aquí</span></b> para descargar el consentimiento del estudio</span>
+        </div>
+      </div>
       </ng-container>
     </div>
      <div class="modal-footer">
       <button class="btn btn-light btn-elevate mr-2" *ngIf="!isUploaded" (click)="upload()" type="button" ><i class="fas fa-file-import"></i> Registrar pago
       </button>
       <button type="button"class="btn btn-light btn-elevate mr-2"  (click)="modal.dismiss()" >
-        Cancelar
+        <span *ngIf="!isUploaded">Cancelar</span>
+        <span *ngIf="isUploaded">Cerrar</span>
       </button>
     </div>
   </div>

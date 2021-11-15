@@ -62,31 +62,26 @@
               <td>{{ study.referring_physician.first_name }} {{ study.referring_physician.first_name }} </td>
               <td>{{ study.presumptive_diagnosis.name }}</td>
               <td>{{ study.budget }}</td>
-              <td>
-                  <a title="Editar" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+              <td style="display: flex;">
+                <a title="Editar" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
                   (click)="edit(study.id)">
                   <span [inlineSVG]="'./assets/media/svg/icons/Communication/Write.svg'" cacheSVG="true"
                     class="svg-icon svg-icon-md svg-icon-primary">
                   </span>
                 </a>
-               </td>  
-              <td>
-                <a *ngIf="study.current_state === studyState.STATE_ONE" title="Descargar consentimiento" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
-                (click)="downloadConsent(study.type_study.id)">
-                  <span [inlineSVG]="'./assets/media/svg/files/doc.svg'" cacheSVG="true"
+                <a *ngIf="study.current_state === studyState.STATE_ONE" title="Subir comprobante de pago" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                (click)="uploadPaymentReceipt(study.id)">
+                <span [inlineSVG]="'./assets/media/svg/icons/Files/Upload.svg'" title="Subir comprobante de pago" cacheSVG="true"
                   class="svg-icon svg-icon-md svg-icon-primary">
                   </span>
                 </a>
-              </td>
-              <td>
                 <a *ngIf="study.current_state === studyState.STATE_THREE" title="Subir consentimiento firmado" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
-                (click)="downloadConsent(study.type_study.id)">
+                  (click)="uploadConsent(study.id)">
                   <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true"
                   class="svg-icon svg-icon-md svg-icon-primary">
                   </span>
                 </a>
               </td>
-
             </tr>
           </tbody>
         </table>

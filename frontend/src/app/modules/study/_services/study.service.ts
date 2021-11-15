@@ -30,10 +30,7 @@ export class StudyService extends TableService<Study> implements OnDestroy {
   }
   
   uploadPaymentReceipt(formData: FormData, studyId: number): Observable<any> {
-    return this.http.post(this.API_URL+'/'+studyId+'/payment-receipt', formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
+    return this.http.post(this.API_URL+'/'+studyId+'/payment-receipt', formData);
   }
 
 }

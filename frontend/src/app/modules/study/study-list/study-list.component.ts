@@ -162,14 +162,7 @@ export class StudyListComponent
       }
       }).catch((res) => {});;
   }
-/*
-  downloadConsent(studyId: number){
-    this.studyService.downloadConsent(studyId).subscribe(blobConsent => {
-      const fileURL = URL.createObjectURL(blobConsent);
-      window.open(fileURL, '_blank');
-    });
-  }
-*/
+
   uploadConsent(idStudy: number) {
     const modalRef = this.modalService.open(ConsentUploadModalComponent, { size: 'xl',keyboard: false});
     modalRef.componentInstance.idStudy = idStudy;
