@@ -74,7 +74,4 @@ def mark_sample_as_paid(
         raise HTTPException(
             status_code=400, detail="La muestra ya fue pagada."
         )
-    crud.study.update_state(
-        db=db, db_obj=study, new_state=StudyState.STATE_NINE,
-        employee_id=current_user.id)
     return sample
