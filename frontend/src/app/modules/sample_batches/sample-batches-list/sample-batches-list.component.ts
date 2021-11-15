@@ -19,6 +19,7 @@ import * as jQuery from 'jquery';
 import 'bootstrap-notify';
 import { CrudOperation } from '../../shared/utils/crud-operation.model';
 import { SampleBatchesState } from '../_model/sample-batches.model';
+import { SampleBatchesModalProcessComponent } from './component/sample-batches-process-modal/sample-batches-process-modal';
 let $: any = jQuery;
 @Component({
   selector: 'app-sample-batches-list',
@@ -43,7 +44,8 @@ export class SampleBatchesListComponent
   public sampleBatchesState: typeof SampleBatchesState = SampleBatchesState;
   constructor(
     private fb: FormBuilder,
-    public sampleBatchesService: SampleBatchesService
+    public sampleBatchesService: SampleBatchesService,
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
@@ -131,23 +133,23 @@ export class SampleBatchesListComponent
     this.sampleBatchesService.patchState({ paginator });
   }
 
-  edit(id: number) {
-    /*
-    const modalRef = this.modalService.open(EditStudyModalComponent, { size: 'xl' });
-    modalRef.componentInstance.id = id;
+  process(batchesId: number) {
+    
+    const modalRef = this.modalService.open(SampleBatchesModalProcessComponent, { size: 'xl' });
+    modalRef.componentInstance.batched_number = batchesId;
     modalRef.result.then((result) =>
       {
         this.sampleBatchesService.fetch();
         if (result.status === CrudOperation.SUCCESS) {
           $.notify({
             title: '<strong>Registro exitoso.</strong>',
-            message: 'Se ha registrado correctamente el estudio'
+            message: 'Se ha proceso correctamente el lote'
           }, {
             type: 'success'
           }),
         () => { }
       }
-      }).catch((res) => {});*/
+      }).catch((res) => {});
   }
 
 }

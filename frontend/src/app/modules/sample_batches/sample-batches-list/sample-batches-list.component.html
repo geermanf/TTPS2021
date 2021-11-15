@@ -43,7 +43,7 @@
             <td>{{ sampleBatches.current_state}}</td>
             <td style="display: flex;">
               <a *ngIf ="sampleBatches.current_state == sampleBatchesState.STATE_ONE"  title="Procesar" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
-                (click)="edit(sampleBatches.id)">
+                (click)="process(sampleBatches.id)">
                 <span [inlineSVG]="'./assets/media/svg/icons/Communication/Write.svg'" cacheSVG="true" title="Procesar"
                   class="svg-icon svg-icon-md svg-icon-primary">
                 </span>
