@@ -1,31 +1,36 @@
 import { Component, Input} from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
 import {
   NgbActiveModal,
   NgbDatepickerConfig,
   NgbDateStruct,
 } from "@ng-bootstrap/ng-bootstrap";
-import { Subscription } from "rxjs";
-import { ValidationErrors } from "src/app/modules/shared/validation-errors";
-import { Patient } from "src/app/modules/patient/_models/patient.model";
-import { Items } from "src/app/modules/shared/utils/items.model";
 import { AppointmentService } from "src/app/modules/appointments/_service/appointment.service";
 import { Appointment } from "src/app/modules/appointments/_models/appointment.model";
+import { StudyService } from "../../../_services";
+import { CrudOperation } from "src/app/modules/shared/utils/crud-operation.model";
+
+export interface Reservation {
+  date_appointment: string,
+  description: string
+}
 
 @Component({
   selector: "app-shift-reservation-modal",
   templateUrl: "./shift-reservation-modal.component.html",
 })
+
 export class ShiftReservationModalComponent  {
   @Input() idStudy: number;
   isLoading$;
   date_reservation: NgbDateStruct;
-  selected_shift: string
+  public selected_shift: string
   shifts: string[]
   public shift_reservation: Appointment[];  
-  public items_available_shift: Items<string, Patient>[]
+  public description: string='';
+  public available_shift: string[];
   constructor(
     private appointmentService: AppointmentService,
+    private studyService: StudyService,
     public modal: NgbActiveModal,
     config: NgbDatepickerConfig,
     ) 
@@ -38,12 +43,21 @@ export class ShiftReservationModalComponent  {
   ngOnInit(): void {
     this.isLoading$ = this.appointmentService.isLoading$;
   }
+  
   getReservation(date) {
     this.appointmentService.getAppointments(date.year+'-'+date.month+'-'+date.day).subscribe(
       appointments => {
-        console.log(appointments);
+        this.available_shift = appointments.filter(shift=> shift.patient === null).map(shift => shift.start +'-'+shift.end);
+        this.shift_reservation = appointments.filter(shift=> shift.patient !== null);
       }
     )
   }
-
+  
+  save() {
+    const datetime_reservation = this.date_reservation.year+ '-' + this.date_reservation.month +'-'+this.date_reservation.day+'T'+this.selected_shift.substr(0,5)+':00' ;
+    
+    this.studyService.registerAppointment(this.idStudy, {date_appointment: datetime_reservation, description:this.description}).subscribe(
+      rpta => this.modal.close({status:CrudOperation.SUCCESS})
+    )
+  }
 }

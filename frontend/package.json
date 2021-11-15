@@ -47,7 +47,8 @@
     "sweetalert2": "^11.1.9",
     "toastr": "^2.1.4",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "ngx-window-token": "^5.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.1",

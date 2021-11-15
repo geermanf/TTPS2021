@@ -34,6 +34,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'sample-batches',
+        loadChildren: () =>
+          import('../modules/sample_batches/sample-batches.module').then(
+            (m) => m.SampleBatchesModule
+          ),
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

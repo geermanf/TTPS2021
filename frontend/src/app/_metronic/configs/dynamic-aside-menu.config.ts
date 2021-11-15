@@ -55,6 +55,20 @@ export const DynamicAsideMenuConfig = {
           page: '/studies/studies'
         },
       ]
+    },
+    {
+      title: 'Lotes',
+      root: true,
+      bullet: 'dot',
+      icon: 'flaticon2-user-outline-symbol',
+      svg: './assets/media/svg/icons/General/User.svg',
+      page: '/studies',
+      submenu: [
+        {
+          title: 'Lista de Lotes',
+          page: '/sample-batches/sample-batches'
+        },
+      ]
     }
   ]
 };

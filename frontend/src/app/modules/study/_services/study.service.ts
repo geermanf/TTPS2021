@@ -4,6 +4,8 @@ import { TableService } from '../../../_metronic/shared/crud-table';
 import { Diagnosis, Study, StudyList, TypeStudy } from '../_models/study.model';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
+import { Reservation } from '../study-list/components/shift-reservation-modal/shift-reservation-modal.component';
+import { RegisterSample } from '../study-list/components/register-sample-modal/register-sample-modal';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +34,19 @@ export class StudyService extends TableService<Study> implements OnDestroy {
   uploadPaymentReceipt(formData: FormData, studyId: number): Observable<any> {
     return this.http.post(this.API_URL+'/'+studyId+'/payment-receipt', formData);
   }
+  
+  registerAppointment(studyId: number, reservation: Reservation): Observable<any> {
+    return this.http.post(this.API_URL+'/'+studyId+'/register-appointment', reservation);
+  }
+
+  registerSample(studyId: number, registerSample: RegisterSample): Observable<any> {
+    return this.http.post(this.API_URL+'/'+studyId+'/register-sample', registerSample);
+  }
+  
+  registerPickupSample(studyId: number, picked_up_by: string): Observable<any> {
+    return this.http.post(this.API_URL+'/'+studyId+'/register-sample-pickup', picked_up_by);
+  }
+  
 
 }
 

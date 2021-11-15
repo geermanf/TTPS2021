@@ -16,6 +16,8 @@ import { ConsentUploadModalComponent } from './study-list/components/consent-upl
 import {MatIconModule} from '@angular/material/icon';
 import { PaymentUploadModalComponent } from './study-list/components/payment-upload-modal/payment-upload-modal.component';
 import { ShiftReservationModalComponent } from './study-list/components/shift-reservation-modal/shift-reservation-modal.component';
+import { RegisterSampleModalComponent} from './study-list/components/register-sample-modal/register-sample-modal';
+import { RegisterSamplePickupModalComponent } from './study-list/components/register-sample-pickup-modal/register-sample-pickup-modal';
 
 
 @NgModule({
@@ -25,7 +27,9 @@ import { ShiftReservationModalComponent } from './study-list/components/shift-re
     EditStudyModalComponent,
     ConsentUploadModalComponent,
     PaymentUploadModalComponent,
-    ShiftReservationModalComponent
+    ShiftReservationModalComponent,
+    RegisterSampleModalComponent,
+    RegisterSamplePickupModalComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +49,9 @@ import { ShiftReservationModalComponent } from './study-list/components/shift-re
     EditStudyModalComponent,
     ConsentUploadModalComponent,
     PaymentUploadModalComponent,
-    ShiftReservationModalComponent
+    ShiftReservationModalComponent,
+    RegisterSampleModalComponent,
+    RegisterSamplePickupModalComponent
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })
