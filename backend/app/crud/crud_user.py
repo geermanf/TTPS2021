@@ -12,6 +12,7 @@ from app.schemas import (
     EmployeeCreate, EmployeeUpdate,
     PatientCreate, PatientUpdate
 )
+from app.constants.role import Role
 
 
 class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -82,13 +83,19 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
         return user.is_active
 
     def is_admin(self, user: User) -> bool:
-        return user.type == 'admin'
+        return user.type == Role.ADMIN["name"]
 
     def is_employee(self, user: User) -> bool:
-        return user.type == 'employee'
+        return user.type == Role.EMPLOYEE["name"]
+    
+    def is_patient(self, user: User) -> bool:
+        return user.type == Role.PATIENT["name"]
+    
+    def is_configurator(self, user: User) -> bool:
+        return user.type == Role.CONFIGURATOR["name"]
 
     def is_reporting_physician(self, user: User) -> bool:
-        return user.type == 'reporting-physician'
+        return user.type == Role.REPORTING_PHYSICIAN["name"]
 
     def type(self, user: User) -> str:
         return user.type

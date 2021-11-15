@@ -49,7 +49,7 @@ class Study(Base):
 
     budget = Column(Float)
 
-    past_states = relationship(
+    states = relationship(
         "StudyStates", primaryjoin="Study.id == StudyStates.study_id", back_populates="study")
 
     report = relationship(

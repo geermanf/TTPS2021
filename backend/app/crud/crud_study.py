@@ -23,6 +23,24 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
             employee_id=employee_id, entry_date=db_obj.created_date)
         return db_obj
 
+    def get_multi(
+        self, db: Session,
+        skip: int = 0, limit: int = 100,
+        state: Optional[str] = None
+    ) -> List[Study]:
+        if state is None:
+            return db.query(Study).offset(skip).limit(limit).all()
+        return db.query(Study).\
+            filter(Study.current_state == state).offset(
+            skip).limit(limit).all()
+
+    def get_multi_delayed(
+        self, db: Session,
+        skip: int = 0, limit: int = 100
+    ) -> List[Study]:
+        return db.query(Study).filter(Study.delayed == True).\
+            offset(skip).limit(limit).all()
+
     def get_multi_by_owner(
         self, db: Session, *, employee_id: int, skip: int = 0, limit: int = 100
     ) -> List[Study]:
@@ -36,7 +54,6 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
 
     def update_state(self, db: Session, db_obj: Study, new_state: str,
                      employee_id: int, entry_date: Optional[datetime] = None) -> Study:
-        # TODO: validar orden de los estados (para hacerlo más robusto)
         if entry_date is None:
             date_time = func.now()
         else:

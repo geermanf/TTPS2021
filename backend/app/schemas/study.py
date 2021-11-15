@@ -1,36 +1,35 @@
 from typing import List, Optional, Any
 from pydantic import BaseModel
 from datetime import datetime
-from .user import Patient, Employee
+from .user import Patient, Employee, UserBase
 from .referring_physician import ReferringPhysician
 from .sample import Sample
 from .appointment import Appointment
 from .report import Report
 
 
-class StudyStatesBase(BaseModel):
-    study_id: int
-    employee_id: int
+class StudyStateBase(BaseModel):
+    employee: UserBase
     state: str
     state_entered_date: datetime
 
 
-class StudyStatesCreate(StudyStatesBase):
+class StudyStateCreate(StudyStateBase):
     pass
 
 
-class StudyStatesUpdate(StudyStatesBase):
+class StudyStateUpdate(StudyStateBase):
     pass
 
 
-class StudyStatesInDBBase(StudyStatesBase):
+class StudyStateInDBBase(StudyStateBase):
     id: int
 
     class Config:
         orm_mode = True
 
 
-class StudyStates(StudyStatesInDBBase):
+class StudyState(StudyStateInDBBase):
     pass
 
 
@@ -71,7 +70,7 @@ class StudyInDBBase(StudyBase):
     signed_consent: Optional[str] = None
     appointment: Optional[Appointment] = None
     report: Optional[Report] = None
-    # past_states
+    states: Optional[StudyState]
     sample: Optional[Sample] = None
 
     class Config:
