@@ -5,7 +5,6 @@ import * as jQuery from 'jquery';
 import 'bootstrap-notify';
 import { StudyService } from '../../../_services';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import 'material-icons/iconfont/material-icons.css';
 import { CrudOperation } from 'src/app/modules/shared/utils/crud-operation.model';
 
 let $: any = jQuery;

@@ -77,7 +77,13 @@
                 </a>
                 <a *ngIf="study.current_state === studyState.STATE_THREE" title="Subir consentimiento firmado" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
                   (click)="uploadConsent(study.id)">
-                  <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true"
+                  <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true"title="Subir consentimiento firmado"
+                  class="svg-icon svg-icon-md svg-icon-primary">
+                  </span>
+                </a>
+                <a *ngIf="study.current_state === studyState.STATE_FOUR" title="Esperando selección de turno" class="btn btn-icon btn-light btn-hover-primary btn-sm mx-3"
+                  (click)="showShiftReservation(study.id)">
+                  <span [inlineSVG]="'./assets/media/svg/icons/Files/DownloadedFile.svg'" cacheSVG="true" title="Esperando selecciónde turno"
                   class="svg-icon svg-icon-md svg-icon-primary">
                   </span>
                 </a>

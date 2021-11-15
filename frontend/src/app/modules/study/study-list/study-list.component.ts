@@ -24,6 +24,7 @@ import * as jQuery from 'jquery';
 import 'bootstrap-notify';
 import { CrudOperation } from '../../shared/utils/crud-operation.model';
 import { PaymentUploadModalComponent } from './components/payment-upload-modal/payment-upload-modal.component';
+import { ShiftReservationModalComponent } from './components/shift-reservation-modal/shift-reservation-modal.component';
 let $: any = jQuery;
 @Component({
   selector: 'app-study-list',
@@ -183,6 +184,16 @@ export class StudyListComponent
 
   uploadPaymentReceipt(idStudy: number) {
     const modalRef = this.modalService.open(PaymentUploadModalComponent, { size: 'xl',keyboard: false});
+    modalRef.componentInstance.idStudy = idStudy;
+    modalRef.result.then((result) =>
+        this.studyListService.fetch()
+        ,
+        () => { }
+      ).catch((res) => {});
+  }
+  
+  showShiftReservation(idStudy: number) {
+    const modalRef = this.modalService.open(ShiftReservationModalComponent, { size: 'xl',keyboard: false});
     modalRef.componentInstance.idStudy = idStudy;
     modalRef.result.then((result) =>
         this.studyListService.fetch()

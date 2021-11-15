@@ -7,7 +7,7 @@
   [class.is-valid]="isControlValid(name)"
   [ngModel]="_selectedItem"
   formControlName="{{name}}" 
-> <option  *ngFor="let item of items"  [selected]="1===1" [ngValue]="item">
+> <option  *ngFor="let item of items" [ngValue]="item">
     {{ item.name }}
   </option>
 </select>
