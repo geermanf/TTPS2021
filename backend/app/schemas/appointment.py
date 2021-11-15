@@ -34,6 +34,12 @@ class Appointment(AppointmentInDBBase):
     pass
 
 
+class AppointmentSimplified(BaseModel):
+    start: str
+    end: str
+    patient: dict = None
+
+
 # Properties properties stored in DB
 class AppointmentInDB(AppointmentInDBBase):
     pass

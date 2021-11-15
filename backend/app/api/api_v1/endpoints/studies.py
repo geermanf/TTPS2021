@@ -193,7 +193,7 @@ async def signed_consent(
     return {"filename": file.filename}
 
 
-@router.post("/{id}/register-apointment", response_model=schemas.Appointment)
+@router.post("/{id}/register-appointment", response_model=schemas.Appointment)
 def register_appointment(
     id: int,
     appointment_in: schemas.AppointmentCreate,

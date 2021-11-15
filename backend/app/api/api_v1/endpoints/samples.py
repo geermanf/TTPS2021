@@ -59,7 +59,6 @@ def read_sample(
 @router.post("/{id}/mark-as-paid", response_model=List[schemas.Sample])
 def mark_sample_as_paid(
     id: int,
-    url: str,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]]

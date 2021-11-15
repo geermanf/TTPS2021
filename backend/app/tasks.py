@@ -38,3 +38,4 @@ for study in studies:
 
 # TODO: Cancelar turnos de estudios que pasaron 30 días del turno asignado
 
+# Tambien buscar estudios con muestra retrasados (60 dias)

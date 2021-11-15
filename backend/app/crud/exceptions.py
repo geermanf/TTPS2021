@@ -42,6 +42,10 @@ class StudyAlreadyWithReport(FastAPIUsersException):
     pass
 
 
+class AppointmentOverlap(FastAPIUsersException):
+    pass
+
+
 class SampleBatchAlreadyProccesed(FastAPIUsersException):
     pass
 
