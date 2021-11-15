@@ -16,5 +16,5 @@ from .study import (
 from .report import Report, ReportCreate, ReportUpdate
 from .referring_physician import ReferringPhysician, ReferringPhysicianCreate, ReferringPhysicianUpdate
 from .sample import Sample, SampleCreate, SampleUpdate
-from .appointment import Appointment, AppointmentCreate, AppointmentUpdate
+from .appointment import Appointment, AppointmentCreate, AppointmentUpdate, AppointmentSimplified
 from .sample_batch import SampleBatch, SampleBatchCreate, SampleBatchUpdate
