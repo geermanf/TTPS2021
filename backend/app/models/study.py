@@ -61,7 +61,7 @@ class Study(Base):
         print("state changed") # solo para probar
 
 
-    current_state = Column(String, nullable=False)
+    current_state = Column(String)
     current_state_entered_date = Column(DateTime(timezone=True)) # TODO: eliminar??... lo tengo en el historico
 
     sample = relationship("Sample", primaryjoin="Study.id == Sample.study_id",
