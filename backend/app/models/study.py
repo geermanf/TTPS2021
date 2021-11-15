@@ -62,7 +62,7 @@ class Study(Base):
 
 
     current_state = Column(String)
-    current_state_entered_date = Column(DateTime(timezone=True)) # TODO: eliminar??... lo tengo en el historico
+    current_state_entered_date = Column(DateTime(timezone=True))
 
     sample = relationship("Sample", primaryjoin="Study.id == Sample.study_id",
                           back_populates="study", uselist=False)
@@ -72,3 +72,5 @@ class Study(Base):
 
     appointment = relationship(
         "Appointment", primaryjoin="Study.id == Appointment.study_id", back_populates="study", uselist=False)
+
+    delayed = Column(Boolean, default=False)

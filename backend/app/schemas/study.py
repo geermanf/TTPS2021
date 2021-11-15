@@ -53,6 +53,7 @@ class StudyUpdate(StudyBase):
     type_study_id: Optional[int]
     presumptive_diagnosis_id: Optional[int]
     referring_physician_id: Optional[int]
+    delayed: Optional[bool]
 
 
 # Properties shared by models stored in DB
@@ -73,6 +74,7 @@ class StudyInDBBase(StudyBase):
     report: Optional[Report] = None
     # past_states
     sample: Optional[Sample] = None
+    delayed: bool
 
     class Config:
         orm_mode = True

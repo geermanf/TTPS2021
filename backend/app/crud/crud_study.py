@@ -36,7 +36,6 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
 
     def update_state(self, db: Session, db_obj: Study, new_state: str,
                      employee_id: int, entry_date: Optional[datetime] = None) -> Study:
-        # TODO: validar orden de los estados (para hacerlo más robusto)
         if entry_date is None:
             date_time = func.now()
         else:
@@ -50,6 +49,12 @@ class CRUDStudy(CRUDBase[Study, StudyCreate, StudyUpdate]):
         db_obj.updated_date = date_time
         db_obj.current_state_entered_date = date_time
         SampleBatch.new_if_qualifies(new_state=new_state, db=db)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+    
+    def mark_delayed(self, db: Session, db_obj: Study) -> Study:
+        db_obj.delayed = True
         db.commit()
         db.refresh(db_obj)
         return db_obj

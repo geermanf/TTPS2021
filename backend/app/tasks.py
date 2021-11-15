@@ -1,12 +1,13 @@
 import sys
 sys.path.append("/")
-from app.db.session import SessionLocal
-from app import crud, models, schemas
-import logging
-from time import sleep
-from datetime import datetime, timedelta
-from app.constants.state import StudyState
 from sqlalchemy import and_
+from app.constants.state import StudyState
+from datetime import datetime, timedelta
+from time import sleep
+import logging
+from app import crud
+from app.models import Study, Appointment
+from app.db.session import SessionLocal
 
 
 logging.basicConfig(level=logging.INFO)
@@ -23,19 +24,36 @@ except Exception as e:
     raise e
 
 
-# Anular estudios que no fueron pagados pasados 30 dias del inicio
+# 3 tareas:
+
+# 1-Anular estudios que no fueron pagados pasados 30 dias del inicio
 
 filter_before = datetime.today() - timedelta(days=30)
-studies = db.query(models.Study).filter(
-    and_(models.Study.current_state == StudyState.STATE_ONE,
-         models.Study.created_date <= filter_before)).all()
-
-
+studies = db.query(Study).filter(
+    and_(Study.current_state == StudyState.STATE_ONE,
+         Study.created_date < filter_before)).all()
 for study in studies:
     crud.study.update_state(db=db, db_obj=study,
                             new_state=StudyState.STATE_ONE_ERROR)
 
 
-# TODO: Cancelar turnos de estudios que pasaron 30 días del turno asignado
+# 2-Cancelar turnos de estudios que pasaron 30 días del turno asignado
+# Pasar los estudios al estado anterior
 
-# Tambien buscar estudios con muestra retrasados (60 dias)
+studies = db.query(Study).join(Appointment).filter(
+    and_(Study.current_state == StudyState.STATE_FOUR,
+         Appointment.date_appointment < filter_before)).all()
+for study in studies:
+    crud.study.update_state(db=db, db_obj=study,
+                            new_state=StudyState.STATE_THREE)
+    crud.appointment.remove(db=db, id=study.appointment.id)
+
+
+# 3-Buscar estudios con muestra retrasadas (90 dias) y marcarlas
+
+filter_before = datetime.today() - timedelta(days=90)
+studies = db.query(Study).filter(
+    and_(Study.current_state == StudyState.STATE_FIVE,
+         Study.current_state_entered_date < filter_before)).all()
+for study in studies:
+    crud.study.mark_delayed(db=db, db_obj=study)
