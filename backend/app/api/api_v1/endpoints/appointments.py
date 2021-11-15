@@ -35,6 +35,8 @@ def appointments(
     """
     Retrieve appointments of a given date.
     """
+    if date.weekday() in (5, 6): # sabado o domingo
+        return []
     appointments = crud.appointment.get_multi(db=db, date=date)
 
     schedule_list = init_list(date=date)
