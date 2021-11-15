@@ -12,6 +12,10 @@ import { StudyRoutingModule } from './study-routing.module';
 import { StudyComponent } from './study.component';
 import { StudyListComponent } from './study-list/study-list.component';
 import { SharedModule } from '../shared/shared.module';
+import { ConsentUploadModalComponent } from './study-list/components/consent-upload-modal/consent-upload-modal.component';
+import {MatIconModule} from '@angular/material/icon';
+import { PaymentUploadModalComponent } from './study-list/components/payment-upload-modal/payment-upload-modal.component';
+import { ShiftReservationModalComponent } from './study-list/components/shift-reservation-modal/shift-reservation-modal.component';
 
 
 @NgModule({
@@ -19,6 +23,9 @@ import { SharedModule } from '../shared/shared.module';
     StudyComponent,
     StudyListComponent,
     EditStudyModalComponent,
+    ConsentUploadModalComponent,
+    PaymentUploadModalComponent,
+    ShiftReservationModalComponent
   ],
   imports: [
     CommonModule,
@@ -30,10 +37,15 @@ import { SharedModule } from '../shared/shared.module';
     NgbModalModule,
     NgbDatepickerModule,
     SharedModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatIconModule
+   
   ],
   entryComponents: [
     EditStudyModalComponent,
+    ConsentUploadModalComponent,
+    PaymentUploadModalComponent,
+    ShiftReservationModalComponent
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })

@@ -19,7 +19,12 @@ import {
 import { EditStudyModalComponent } from './components/edit-study-modal/edit-study-modal.component';
 import { StudyListService, StudyService } from '../_services/study.service';
 import { StudyState } from '../_models/study.model';
-
+import { ConsentUploadModalComponent } from './components/consent-upload-modal/consent-upload-modal.component';
+import * as jQuery from 'jquery';
+import 'bootstrap-notify';
+import { CrudOperation } from '../../shared/utils/crud-operation.model';
+import { PaymentUploadModalComponent } from './components/payment-upload-modal/payment-upload-modal.component';
+let $: any = jQuery;
 @Component({
   selector: 'app-study-list',
   templateUrl: './study-list.component.html',
@@ -143,17 +148,54 @@ export class StudyListComponent
   edit(id: number) {
     const modalRef = this.modalService.open(EditStudyModalComponent, { size: 'xl' });
     modalRef.componentInstance.id = id;
-    modalRef.result.then(() =>
-      this.studyListService.fetch(),
-      () => { }
-    );
+    modalRef.result.then((result) =>
+      {
+        this.studyListService.fetch();
+        if (result.status === CrudOperation.SUCCESS) {
+          $.notify({
+            title: '<strong>Registro exitoso.</strong>',
+            message: 'Se ha registrado correctamente el estudio'
+          }, {
+            type: 'success'
+          }),
+        () => { }
+      }
+      }).catch((res) => {});;
   }
-
-  downloadConsent(typeStudyId: number){
-    this.studyService.downloadConsent(typeStudyId).subscribe(blobConsent => {
+/*
+  downloadConsent(studyId: number){
+    this.studyService.downloadConsent(studyId).subscribe(blobConsent => {
       const fileURL = URL.createObjectURL(blobConsent);
       window.open(fileURL, '_blank');
     });
+  }
+*/
+  uploadConsent(idStudy: number) {
+    const modalRef = this.modalService.open(ConsentUploadModalComponent, { size: 'xl',keyboard: false});
+    modalRef.componentInstance.idStudy = idStudy;
+    modalRef.result.then((result) =>
+      {
+        this.studyListService.fetch();
+        if (result.status === CrudOperation.SUCCESS) {
+          $.notify({
+            title: '<strong>Registro exitoso.</strong>',
+            message: 'Se ha registrado correctamente el consentimiento firmado'
+          }, {
+            type: 'success'
+          }),
+        () => { }
+      }
+      }).catch((res) => {});
+  }
+
+  uploadPaymentReceipt(idStudy: number) {
+    const modalRef = this.modalService.open(PaymentUploadModalComponent, { size: 'xl',keyboard: false});
+    modalRef.componentInstance.idStudy = idStudy;
+    modalRef.result.then((result) =>
+        this.studyListService.fetch()
+        ,
+        () => { }
+      ).catch((res) => {});
   }
 
 }
