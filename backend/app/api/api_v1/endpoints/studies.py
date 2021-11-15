@@ -1,5 +1,8 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Security, File, UploadFile
+from fastapi import (
+    APIRouter, Depends, HTTPException,
+    Security, File, UploadFile, Body
+)
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.api import deps
@@ -20,20 +23,33 @@ def read_studies(
     limit: int = 100,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.EMPLOYEE["name"]],
+        scopes=[Role.EMPLOYEE["name"], Role.REPORTING_PHYSICIAN["name"]],
     )
 ) -> Any:
     """
     Retrieve studies.
     """
-    # TODO: permitir acceder a medico informante, pero asegurarse que los estudios
-    # estén en estado "Esperando interpretación de resultados e informes"
-    if True:  # crud.user.is_admin(current_user):
-        studies = crud.study.get_multi(db, skip=skip, limit=limit)
+    if crud.user.is_reporting_physician(current_user):
+        studies = crud.study.get_multi(db, skip=skip, limit=limit, state=StudyState.STATE_EIGHT)
     else:
-        studies = crud.study.get_multi_by_owner(
-            db=db, owner_id=current_user.id, skip=skip, limit=limit
-        )
+        studies = crud.study.get_multi(db, skip=skip, limit=limit)
+    return studies
+
+
+@router.get("/delayed", response_model=List[schemas.Study])
+def read_delayed_studies(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    )
+) -> Any:
+    """
+    Retrieve delayed studies.
+    """
+    studies = crud.study.get_multi_delayed(db, skip=skip, limit=limit)
     return studies
 
 
@@ -266,7 +282,7 @@ def register_sample(
 @router.post("/{id}/register-sample-pickup")
 def register_sample_pickup(
     id: int,
-    picked_up_by: str,
+    picked_up_by: str = Body(...),
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]]
@@ -344,7 +360,7 @@ def download_consent(
     return Response(content=pdf, media_type="application/pdf")
 
 
-@router.get("/{id}/study-history", response_model=List[schemas.StudyStates])
+@router.get("/{id}/study-history", response_model=List[schemas.StudyState])
 def study_history(
     id: int,
     current_user: models.User = Security(

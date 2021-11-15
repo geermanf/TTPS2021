@@ -11,7 +11,8 @@ class StudyStates(Base):
     id = Column(Integer, primary_key=True, index=True)
     study_id = Column(Integer, ForeignKey("study.id"))
     study = relationship(
-        "Study", primaryjoin="StudyStates.study_id == Study.id", back_populates="past_states")
+        "Study", primaryjoin="StudyStates.study_id == Study.id",
+        back_populates="states")
     state = Column(String)
     state_entered_date = Column(DateTime(timezone=True))
     employee_id = Column(Integer, ForeignKey(Employee.id))

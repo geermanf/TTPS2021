@@ -80,7 +80,7 @@ def create_patient_open(
     last_name: str = Body(...),
     password: str = Body(...),
     email: EmailStr = Body(...)
-    
+
 ) -> Any:
     """
     Create new patient without the need to be logged in.
@@ -116,7 +116,7 @@ def read_patient_by_id(
     patient_id: int,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.EMPLOYEE["name"]],
+        scopes=[Role.EMPLOYEE["name"], Role.PATIENT["name"]],
     ),
     db: Session = Depends(deps.get_db),
 ) -> Any:
@@ -124,12 +124,11 @@ def read_patient_by_id(
     Get a specific patient by id.
     """
     patient = crud.patient.get(db, id=patient_id)
-    if patient == current_user:
-        return patient
-    if not crud.user.is_admin(current_user):
-        raise HTTPException(
-            status_code=400, detail="The user doesn't have enough privileges"
-        )
+    if crud.user.is_patient(current_user):
+        if patient.id != current_user.id:
+            raise HTTPException(
+                status_code=401, detail="Not enough permissions"
+            )
     return patient
 
 

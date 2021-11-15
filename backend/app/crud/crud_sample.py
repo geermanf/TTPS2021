@@ -11,7 +11,7 @@ class CRUDSample(CRUDBase[Sample, SampleCreate, SampleUpdate]):
     def create(
         self, db: Session, study_id: int, obj_in: Union[SampleCreate, Dict[str, Any]]
     ) -> Sample:
-        if False:  # TODO: implementar
+        if 1 == 2:  # TODO: implementar
             raise StudyAlreadyWithSample()
         if isinstance(obj_in, dict):
             create_data = obj_in
@@ -31,7 +31,7 @@ class CRUDSample(CRUDBase[Sample, SampleCreate, SampleUpdate]):
         db.commit()
         db.refresh(db_obj)
         return db_obj
-    
+
     def mark_as_paid(
             self, db: Session, db_obj: Sample, url: str) -> Optional[Sample]:
         if db_obj.paid is not None and db_obj.paid is True:
