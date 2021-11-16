@@ -24,8 +24,7 @@ def read_samples(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    paid: bool = False,
-    unpaid: bool = False,
+    paid: Optional[bool] = None,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]],
@@ -34,13 +33,7 @@ def read_samples(
     """
     Retrieve samples.
     """
-    if paid == True:
-        if unpaid == True:
-            return []
-        return crud.sample.get_paid(db=db, skip=skip, limit=limit)
-    if unpaid == True:
-        return crud.sample.get_unpaid(db=db, skip=skip, limit=limit)
-    return crud.sample.get_multi(db, skip=skip, limit=limit)
+    return crud.sample.get_multi(db, paid=paid, skip=skip, limit=limit)
 
 
 @router.get("/{id}", response_model=schemas.Sample)
