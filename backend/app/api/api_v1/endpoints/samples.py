@@ -24,6 +24,8 @@ def read_samples(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
+    only_paid: bool = False,
+    only_unpaid: bool = False,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]],
@@ -32,13 +34,13 @@ def read_samples(
     """
     Retrieve samples.
     """
-    if True:  # crud.user.is_admin(current_user):
-        samples = crud.sample.get_multi(db, skip=skip, limit=limit)
-    else:
-        samples = crud.sample.get_multi_by_owner(
-            db=db, owner_id=current_user.id, skip=skip, limit=limit
-        )
-    return samples
+    if only_paid == True:
+        if only_unpaid == True:
+            return []
+        return crud.sample.get_only_paid(db=db, skip=skip, limit=limit)
+    if only_unpaid == True:
+        return crud.sample.get_only_unpaid(db=db, skip=skip, limit=limit)
+    return crud.sample.get_multi(db, skip=skip, limit=limit)
 
 
 @router.get("/{id}", response_model=schemas.Sample)
@@ -56,21 +58,23 @@ def read_sample(
     return sample
 
 
-@router.post("/{id}/mark-as-paid", response_model=List[schemas.Sample])
-def mark_sample_as_paid(
+@router.post("/mark-samples-as-paid")
+def mark_samples_as_paid(
     id: int,
+    samples: List[int],
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]]
     ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    sample = retrieve_sample(db, id)
-    try:
-        sample = crud.sample.mark_as_paid(
-        db=db, db_obj=sample, url=url)
-    except SampleAlreadyPaid:
-        raise HTTPException(
-            status_code=400, detail="La muestra ya fue pagada."
-        )
-    return sample
+    for sample_id in samples:
+        sample = retrieve_sample(db=db, id=sample_id)
+        try:
+            sample = crud.sample.mark_as_paid(
+                db=db, db_obj=sample, url=url)
+        except SampleAlreadyPaid:
+            raise HTTPException(
+                status_code=400, detail="La muestra con id: {} ya fue pagada.".format(sample_id)
+            )
+    return {"status": "ok"}

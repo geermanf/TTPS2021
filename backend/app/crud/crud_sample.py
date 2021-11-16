@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models import Sample, Study
 from app.schemas import SampleCreate, SampleUpdate
 from app.crud.base import CRUDBase
-from typing import Dict, Union, Any, Optional
+from typing import Dict, Union, Any, Optional, List
 from app.crud.exceptions import StudyAlreadyWithSample, SampleAlreadyPickedUp, SampleAlreadyPaid
 from sqlalchemy.sql import func
 
@@ -42,6 +42,16 @@ class CRUDSample(CRUDBase[Sample, SampleCreate, SampleUpdate]):
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+    def get_only_paid(
+        self, db: Session, *, skip: int = 0, limit: int = 100
+    ) -> List[Sample]:
+        return db.query(Sample).filter(Sample.paid == True).offset(skip).limit(limit).all()
+    
+    def get_only_paid(
+        self, db: Session, *, skip: int = 0, limit: int = 100
+    ) -> List[Sample]:
+        return db.query(Sample).filter(Sample.paid == False).offset(skip).limit(limit).all()
 
 
 sample = CRUDSample(Sample)
