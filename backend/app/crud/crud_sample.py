@@ -43,12 +43,12 @@ class CRUDSample(CRUDBase[Sample, SampleCreate, SampleUpdate]):
         db.refresh(db_obj)
         return db_obj
 
-    def get_only_paid(
+    def get_paid(
         self, db: Session, *, skip: int = 0, limit: int = 100
     ) -> List[Sample]:
         return db.query(Sample).filter(Sample.paid == True).offset(skip).limit(limit).all()
     
-    def get_only_paid(
+    def get_paid(
         self, db: Session, *, skip: int = 0, limit: int = 100
     ) -> List[Sample]:
         return db.query(Sample).filter(Sample.paid == False).offset(skip).limit(limit).all()
