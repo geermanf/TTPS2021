@@ -8,8 +8,13 @@ from .appointment import Appointment
 from .report import Report
 
 
+class UserBaseInDBBase(UserBase):
+    class Config:
+        orm_mode = True
+
+
 class StudyStateBase(BaseModel):
-    employee: Optional[UserBase] = None
+    employee: Optional[UserBaseInDBBase] = None
     state: Optional[str] = None
     state_entered_date: Optional[datetime] = None
 

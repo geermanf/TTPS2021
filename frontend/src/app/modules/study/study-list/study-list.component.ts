@@ -173,6 +173,7 @@ export class StudyListComponent
     modalRef.result.then((result) =>
       {
         this.studyListService.fetch();
+        
         if (result.status === CrudOperation.SUCCESS) {
           $.notify({
             title: '<strong>Registro exitoso.</strong>',

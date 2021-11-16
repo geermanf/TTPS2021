@@ -84,5 +84,5 @@ def mark_batch_as_processed(
         crud.study.update_state(
             db=db, db_obj=sample.study, new_state=StudyState.STATE_EIGHT,
             employee_id=current_user.id,
-            updated_date=sample_batch.current_state_entered_date)
+            entry_date=sample_batch.current_state_entered_date)
     return sample_batch
