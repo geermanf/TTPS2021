@@ -29,5 +29,11 @@ class CRUDTypeStudy(CRUDBase[TypeStudy, TypeStudyCreate, TypeStudyUpdate]):
             update_data = obj_in.dict(exclude_unset=True)
         return super().update(db, db_obj=db_obj, obj_in=update_data)
 
+    def update_template(self, db: Session, db_obj: TypeStudy, template: str) -> TypeStudy:
+        db_obj.study_consent_template = template
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
 
 type_study = CRUDTypeStudy(TypeStudy)

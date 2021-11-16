@@ -318,7 +318,7 @@ def add_report(
     report = crud.report.create(db=db, study_id=study.id, obj_in=report_in)
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_NINE,
-        employee_id=current_user.id, updated_date=report.date_report)
+        employee_id=current_user.id, entry_date=report.date_report)
     return report
 
 
