@@ -1,5 +1,4 @@
 from typing import Generator
-
 from fastapi import Depends, Security, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
@@ -10,6 +9,8 @@ from app import crud, models, schemas
 from app.core import security
 from app.core.config import settings
 from app.db.session import SessionLocal
+from app.core.config import settings
+
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token",
@@ -60,6 +61,8 @@ def get_current_user(
     user = crud.user.get(db, id=token_data.id)
     if not user:
         raise credentials_exception
+    if settings.DEVELOPMENT == True:
+        return user
     if security_scopes.scopes and (
         not token_data.role
         or token_data.role not in security_scopes.scopes
