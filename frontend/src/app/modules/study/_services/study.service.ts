@@ -5,7 +5,7 @@ import { Diagnosis, Study, StudyList, TypeStudy } from '../_models/study.model';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { Reservation } from '../study-list/components/shift-reservation-modal/shift-reservation-modal.component';
-import { RegisterSample } from '../study-list/components/register-sample-modal/register-sample-modal';
+import { RegisterSample } from '../study-list/components/register-sample-modal/register-sample-modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +47,10 @@ export class StudyService extends TableService<Study> implements OnDestroy {
     return this.http.post(this.API_URL+'/'+studyId+'/register-sample-pickup', picked_up_by);
   }
   
-
+  registerReport(studyId: number, result:string, report: string): Observable<any> {
+    return this.http.post(this.API_URL+'/'+studyId+'/add-report', {result: result, report : report });
+  }
+  
 }
 
 @Injectable({

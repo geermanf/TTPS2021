@@ -34,10 +34,10 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'sample-batches',
+        path: 'type-studies',
         loadChildren: () =>
-          import('../modules/sample_batches/sample-batches.module').then(
-            (m) => m.SampleBatchesModule
+          import('../modules/type_study/type-study.module').then(
+            (m) => m.TypeStudyModule
           ),
       },
       {

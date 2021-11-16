@@ -27,6 +27,7 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@ng-bootstrap/ng-bootstrap": "^8.0.0",
     "@ngx-translate/core": "^13.0.0",
+    "angular-froala-wysiwyg": "^4.0.6",
     "angular-in-memory-web-api": "^0.11.0",
     "apexcharts": "^3.20.0",
     "bootstrap": "^4.6.0",
@@ -49,7 +50,6 @@
     "toastr": "^2.1.4",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3",
-    "ngx-window-token": "^5.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.1",

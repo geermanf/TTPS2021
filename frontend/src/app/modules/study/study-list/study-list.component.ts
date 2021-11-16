@@ -25,8 +25,9 @@ import 'bootstrap-notify';
 import { CrudOperation } from '../../shared/utils/crud-operation.model';
 import { PaymentUploadModalComponent } from './components/payment-upload-modal/payment-upload-modal.component';
 import { ShiftReservationModalComponent } from './components/shift-reservation-modal/shift-reservation-modal.component';
-import { RegisterSampleModalComponent } from './components/register-sample-modal/register-sample-modal';
+import { RegisterSampleModalComponent } from './components/register-sample-modal/register-sample-modal.component';
 import { RegisterSamplePickupModalComponent } from './components/register-sample-pickup-modal/register-sample-pickup-modal';
+import { RegisterReportModalComponent } from './components/register-report-modal/register-report-modal.component';
 let $: any = jQuery;
 @Component({
   selector: 'app-study-list',
@@ -214,7 +215,7 @@ export class StudyListComponent
   }
   
   registerSample(idStudy: number) {
-    const modalRef = this.modalService.open(RegisterSampleModalComponent, { size: 'xl',keyboard: false});
+    const modalRef = this.modalService.open(RegisterReportModalComponent, { size: 'xl',keyboard: false});
     modalRef.componentInstance.idStudy = idStudy;
     modalRef.result.then((result) =>{
         this.studyListService.fetch();
@@ -231,6 +232,26 @@ export class StudyListComponent
         () => { }
       ).catch((res) => {});
   }
+  registerReport (idStudy: number) {
+    const modalRef = this.modalService.open(RegisterReportModalComponent
+      , { size: 'xl',keyboard: false});
+    modalRef.componentInstance.idStudy = idStudy;
+    modalRef.result.then((result) =>{
+        this.studyListService.fetch();
+        if (result.status === CrudOperation.SUCCESS) {
+          $.notify({
+            title: '<strong>Registro exitoso.</strong>',
+            message: 'Se ha registrado el reporte exitosamente'
+          }, {
+            type: 'success'
+          }),
+        () => { }
+      }
+    },
+        () => { }
+      ).catch((res) => {});
+  }
+
 
   registerSamplePickup(idStudy: number) {
     const modalRef = this.modalService.open(RegisterSamplePickupModalComponent

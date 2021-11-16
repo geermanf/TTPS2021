@@ -9,19 +9,21 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NgbDatepickerModule, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../shared/shared.module';
 import {MatIconModule} from '@angular/material/icon';
-import { SampleBatchesComponent } from './sample-batches.component';
-import { SampleBatchesRoutingModule } from './sample-batches-routing.module';
-import { SampleBatchesListComponent } from './sample-batches-list/sample-batches-list.component';
-
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import { TypeStudyComponent } from './type-study.component';
+import { TypeStudyRoutingModule } from './type-study-routing.module';
+import { TypeStudyListComponent } from './type-study-list/type-study-list.component';
+import { EditTemplateModalComponent } from './type-study-list/component/edit-template-modal.component';
 
 @NgModule({
   declarations: [
-    SampleBatchesComponent,
-    SampleBatchesListComponent
+    TypeStudyComponent,
+    TypeStudyListComponent,
+    EditTemplateModalComponent
   ],
   imports: [
     CommonModule,
-    SampleBatchesRoutingModule,
+    TypeStudyRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     InlineSVGModule,
@@ -30,12 +32,16 @@ import { SampleBatchesListComponent } from './sample-batches-list/sample-batches
     NgbDatepickerModule,
     SharedModule,
     MatDatepickerModule,
-    MatIconModule
-   
+    MatIconModule,
+    FroalaEditorModule.forRoot(), FroalaViewModule.forRoot()
+    
   ],
   entryComponents: [
-    SampleBatchesListComponent
+    TypeStudyListComponent, EditTemplateModalComponent
   ],
+  exports: [ FroalaEditorModule, FroalaViewModule],
+
+
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })
-export class SampleBatchesModule {}
+export class TypeStudyModule {}

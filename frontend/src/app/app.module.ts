@@ -1,3 +1,4 @@
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

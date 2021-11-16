@@ -1,4 +1,3 @@
-import { SampleBatchesService } from '../_service/sample-batches.service';
 // tslint:disable:no-string-literal
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -18,13 +17,14 @@ import {
 import * as jQuery from 'jquery';
 import 'bootstrap-notify';
 import { CrudOperation } from '../../shared/utils/crud-operation.model';
-import { SampleBatchesState } from '../_model/sample-batches.model';
+import { TypeStudyService } from '../_service/type-study.service';
+import { EditTemplateModalComponent } from './component/edit-template-modal.component';
 let $: any = jQuery;
 @Component({
-  selector: 'app-sample-batches-list',
-  templateUrl: './sample-batches-list.component.html',
+  selector: 'app-type-study-list',
+  templateUrl: './type-study-list.component.html',
 })
-export class SampleBatchesListComponent
+export class TypeStudyListComponent
   implements
   OnInit,
   OnDestroy,
@@ -40,20 +40,20 @@ export class SampleBatchesListComponent
   filterGroup: FormGroup;
   searchGroup: FormGroup;
   private subscriptions: Subscription[] = [];
-  public sampleBatchesState: typeof SampleBatchesState = SampleBatchesState;
-  constructor(
+    constructor(
     private fb: FormBuilder,
-    public sampleBatchesService: SampleBatchesService
-  ) { }
+    public typeStudyService: TypeStudyService,
+    private modalService: NgbModal,
+    ) { }
 
   ngOnInit(): void {
     this.filterForm();
     this.searchForm();
-    this.sampleBatchesService.fetch();
-    this.grouping = this.sampleBatchesService.grouping;
-    this.paginator = this.sampleBatchesService.paginator;
-    this.sorting = this.sampleBatchesService.sorting;
-    const sb = this.sampleBatchesService.isLoading$.subscribe(res => this.isLoading = res);
+    this.typeStudyService.fetch();
+    this.grouping = this.typeStudyService.grouping;
+    this.paginator = this.typeStudyService.paginator;
+    this.sorting = this.typeStudyService.sorting;
+    const sb = this.typeStudyService.isLoading$.subscribe(res => this.isLoading = res);
     this.subscriptions.push(sb);
   }
 
@@ -88,7 +88,7 @@ export class SampleBatchesListComponent
     if (type) {
       filter['type'] = type;
     }
-    this.sampleBatchesService.patchState({ filter });
+    this.typeStudyService.patchState({ filter });
   }
 
   // search
@@ -110,7 +110,7 @@ export class SampleBatchesListComponent
   }
 
   search(searchTerm: string) {
-    this.sampleBatchesService.patchState({ searchTerm });
+    this.typeStudyService.patchState({ searchTerm });
   }
 
   // sorting
@@ -123,31 +123,32 @@ export class SampleBatchesListComponent
     } else {
       sorting.direction = sorting.direction === 'asc' ? 'desc' : 'asc';
     }
-    this.sampleBatchesService.patchState({ sorting });
+    this.typeStudyService.patchState({ sorting });
   }
 
   // pagination
   paginate(paginator: PaginatorState) {
-    this.sampleBatchesService.patchState({ paginator });
+    this.typeStudyService.patchState({ paginator });
   }
 
-  edit(id: number) {
-    /*
-    const modalRef = this.modalService.open(EditStudyModalComponent, { size: 'xl' });
-    modalRef.componentInstance.id = id;
+  edit(typeStudyId: number, template:string) {
+    
+    const modalRef = this.modalService.open(EditTemplateModalComponent, { size: 'xl' });
+    modalRef.componentInstance.typeStudyId = typeStudyId;
+    modalRef.componentInstance.template = template;
     modalRef.result.then((result) =>
       {
-        this.sampleBatchesService.fetch();
+        this.typeStudyService.fetch();
         if (result.status === CrudOperation.SUCCESS) {
           $.notify({
             title: '<strong>Registro exitoso.</strong>',
-            message: 'Se ha registrado correctamente el estudio'
+            message: 'Se ha modificado correctamente el template del consentimiento'
           }, {
             type: 'success'
           }),
         () => { }
       }
-      }).catch((res) => {});*/
+      }).catch((res) => {});
   }
 
 }
