@@ -12,7 +12,7 @@ export interface RegisterSample {
 
 @Component({
   selector: "app-register-sample-modal",
-  templateUrl: "./register-sample-modal.html",
+  templateUrl: "./register-sample-modal.component.html",
 })
 
 export class RegisterSampleModalComponent  {
