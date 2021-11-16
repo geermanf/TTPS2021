@@ -12,12 +12,14 @@ import {MatIconModule} from '@angular/material/icon';
 import { SampleBatchesComponent } from './sample-batches.component';
 import { SampleBatchesRoutingModule } from './sample-batches-routing.module';
 import { SampleBatchesListComponent } from './sample-batches-list/sample-batches-list.component';
+import { SampleBatchesModalProcessComponent } from './sample-batches-list/component/sample-batches-process-modal/sample-batches-process-modal';
 
 
 @NgModule({
   declarations: [
     SampleBatchesComponent,
-    SampleBatchesListComponent
+    SampleBatchesListComponent,
+    SampleBatchesModalProcessComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,7 @@ import { SampleBatchesListComponent } from './sample-batches-list/sample-batches
    
   ],
   entryComponents: [
-    SampleBatchesListComponent
+    SampleBatchesListComponent,SampleBatchesModalProcessComponent
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
 })
