@@ -27,6 +27,20 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'studies',
+        loadChildren: () =>
+          import('../modules/study/study.module').then(
+            (m) => m.StudyModule
+          ),
+      },
+      {
+        path: 'type-studies',
+        loadChildren: () =>
+          import('../modules/type_study/type-study.module').then(
+            (m) => m.TypeStudyModule
+          ),
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

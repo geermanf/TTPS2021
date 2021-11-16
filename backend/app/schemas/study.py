@@ -1,58 +1,41 @@
 from typing import List, Optional, Any
-
 from pydantic import BaseModel
 from datetime import datetime
-
-from enum import Enum
-
-from .user import User, Patient, InformantPhysician, Employee
+from .user import Patient, Employee, UserBase
 from .referring_physician import ReferringPhysician
-
-class ResultEnum(str, Enum):
-    # PENDING = 'pendiente'
-    POSITIVE = 'positivo'
-    NEGATIVE = 'negativo'
+from .sample import Sample
+from .appointment import Appointment
+from .report import Report
 
 
+class UserBaseInDBBase(UserBase):
+    class Config:
+        orm_mode = True
 
-class HistoryBase(BaseModel):
-    study_id: int
-    employee_id: int
-    state: Any
-    state_entered_date: datetime
 
-class HistoryInDBBase(HistoryBase):
+class StudyStateBase(BaseModel):
+    employee: Optional[UserBaseInDBBase] = None
+    state: Optional[str] = None
+    state_entered_date: Optional[datetime] = None
+
+
+class StudyStateCreate(StudyStateBase):
+    pass
+
+
+class StudyStateUpdate(StudyStateBase):
+    pass
+
+
+class StudyStateInDBBase(StudyStateBase):
     id: int
 
     class Config:
         orm_mode = True
 
-class History(HistoryInDBBase):
+
+class StudyState(StudyStateInDBBase):
     pass
-
-
-class ReportBase(BaseModel):
-    result: Optional[ResultEnum] = None
-    report: Optional[str]
-
-class ReportCreate(ReportBase):
-    study_id: int
-    informant_physician_id: int
-    result: ResultEnum
-    report: str
-
-class ReportInDBBase(ReportBase):
-    id: int
-    date_report: Optional[datetime] = None #TODO: que no sea opcional
-    informant_physician: Optional[InformantPhysician] = None #TODO: que no sea opcional
-    
-    class Config:
-        orm_mode = True
-
-class Report(ReportInDBBase):
-    pass
-
-
 
 
 # Shared properties
@@ -60,12 +43,13 @@ class StudyBase(BaseModel):
     budget: Optional[float] = None
 
 # Properties to receive on item creation
+
+
 class StudyCreate(StudyBase):
     type_study_id: int
     patient_id: int
     referring_physician_id: int
     presumptive_diagnosis_id: int
-
 
 
 # Properties to receive on item update
@@ -78,20 +62,24 @@ class StudyUpdate(StudyBase):
 # Properties shared by models stored in DB
 class StudyInDBBase(StudyBase):
     id: int
-    created_date: Optional[datetime] = None #TODO: arreglar el None
+    created_date: Optional[datetime] = None  # TODO: arreglar el None
     updated_date: Optional[datetime] = None
     current_state: Optional[Any] = None
     current_state_entered_date: Optional[datetime] = None
-    employee: Optional[Employee] = None #TODO: arreglar el None
-    patient: Patient
-    type_study: Any #TODO: implementar esquema
+    employee: Optional[Employee] = None  # TODO: arreglar el None
+    patient: Optional[Patient] = None
+    type_study: Any  # TODO: implementar esquema
     referring_physician: ReferringPhysician
-    presumptive_diagnosis: Any #TODO: implementar esquema
+    presumptive_diagnosis: Any  # TODO: implementar esquema
+    payment_receipt: Optional[str] = None
+    signed_consent: Optional[str] = None
+    appointment: Optional[Appointment] = None
     report: Optional[Report] = None
-    #history
+    states: Optional[List[StudyState]] = None
+    sample: Optional[Sample] = None
+
     class Config:
         orm_mode = True
-
 
 
 # Properties to return to client
@@ -111,6 +99,7 @@ class TypeStudyBase(BaseModel):
 
 class TypeStudyInDBBase(TypeStudyBase):
     id: Optional[int] = None
+
     class Config:
         orm_mode = True
 
@@ -127,7 +116,3 @@ class TypeStudyUpdate(TypeStudyBase):
 
 class TypeStudy(TypeStudyInDBBase):
     pass
-
-
-class DetailedReport(Report):
-    study: Study
