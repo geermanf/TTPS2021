@@ -33,7 +33,6 @@ def read_reporting_physicians(
     return reportings
 
 
-
 @router.post("/", response_model=schemas.ReportingPhysician)
 def create_reporting_physician(
     *,
@@ -98,7 +97,7 @@ def update_reporting_physician(
     if not reporting:
         raise HTTPException(
             status_code=404,
-            detail="The reporting with this id does not exist in the system",
+            detail="La id ingresada no corresponde a ningún médico informante registrado en el sistema",
         )
     try:
         return crud.reporting_physician.update(

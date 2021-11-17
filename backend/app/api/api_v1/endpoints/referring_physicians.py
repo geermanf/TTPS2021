@@ -4,6 +4,12 @@ from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.api import deps
 from app.constants.role import Role
+from app.crud.crud_user import (
+    UsernameAlreadyRegistered,
+    LicenseAlreadyRegistered,
+    EmailAlreadyRegistered
+)
+
 
 router = APIRouter()
 
@@ -74,7 +80,7 @@ def update_referring_physician(
         *,
         db: Session = Depends(deps.get_db),
         referring_physician_id: int,
-        referring_physician_in: schemas.ReferringPhysicianUpdate,
+        physician_in: schemas.ReferringPhysicianUpdate,
         current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
@@ -87,7 +93,22 @@ def update_referring_physician(
     if not physician:
         raise HTTPException(
             status_code=404,
-            detail="The referring physician with this id does not exist in the system",
+            detail="La id ingresada no corresponde a ningún médico derivante registrado en el sistema",
         )
-    physician = crud.referring_physician.update(db, db_obj=physician, obj_in=referring_physician_in)
-    return physician
+    try:
+        return crud.referring_physician.update(db, db_obj=physician, obj_in=physician_in)
+    except UsernameAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El username ingresado ya se encuentra registrado",
+        )
+    except LicenseAlreadyRegistered: #TODO: cruzar con las licencias de un medico informante, o no?
+        raise HTTPException(
+            status_code=400,
+            detail="La licencia ingresada ya se encuentra registrada",
+        )
+    except EmailAlreadyRegistered:
+        raise HTTPException(
+            status_code=400,
+            detail="El email ingresado ya se encuentra registrado",
+        )
