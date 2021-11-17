@@ -25,7 +25,7 @@ def read_employees(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
     ),
-    
+
 ) -> Any:
     """
     Retrieve employees.
@@ -65,7 +65,9 @@ def create_employee(
         )
     return employee
 
-#mirar luego
+# mirar luego
+
+
 @router.get("/{employee_id}", response_model=schemas.Employee)
 def read_employee_by_id(
     employee_id: int,
@@ -84,14 +86,17 @@ def read_employee_by_id(
             status_code=404,
             detail="El empleado con el id ingresado no existe en el sistema",
         )
+    if crud.user.is_admin(current_user):
+        return employee
     if employee != current_user:
         raise HTTPException(
-            status_code=400, detail="Usted no tiene los permisos suficientes"
+            status_code=401, detail="Usted no tiene los permisos suficientes"
         )
     return employee
 
 
-@router.put("/{employee_id}", response_model=schemas.Employee) #TODO: validar que el username no corresponda a otro
+# TODO: validar que el username no corresponda a otro
+@router.put("/{employee_id}", response_model=schemas.Employee)
 def update_employee(
     *,
     db: Session = Depends(deps.get_db),
@@ -112,7 +117,8 @@ def update_employee(
             detail="The employee with this id does not exist in the system",
         )
     try:
-        employee = crud.employee.update(db, db_obj=employee, obj_in=employee_in)
+        employee = crud.employee.update(
+            db, db_obj=employee, obj_in=employee_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,

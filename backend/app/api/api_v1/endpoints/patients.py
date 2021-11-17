@@ -124,12 +124,20 @@ def read_patient_by_id(
     Get a specific patient by id.
     """
     patient = crud.patient.get(db, id=patient_id)
-    if crud.user.is_patient(current_user):
-        if patient.id != current_user.id:
-            raise HTTPException(
-                status_code=401, detail="Not enough permissions"
-            )
+    if not patient:
+        raise HTTPException(
+            status_code=404,
+            detail="El paciente con el id ingresado no existe en el sistema",
+        )
+    if crud.user.is_admin(current_user):
+        return patient
+    if patient != current_user:
+        raise HTTPException(
+            status_code=401, detail="Usted no tiene los permisos suficientes"
+        )
     return patient
+
+
 
 
 @router.put("/{patient_id}", response_model=schemas.Patient)

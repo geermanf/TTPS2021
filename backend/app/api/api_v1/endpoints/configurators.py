@@ -72,9 +72,11 @@ def read_configurator_by_id(
             status_code=404,
             detail="El configurador con el id ingresado no existe en el sistema",
         )
+    if crud.user.is_admin(current_user):
+        return configurator
     if configurator != current_user:
         raise HTTPException(
-            status_code=400, detail="Usted no tiene los permisos suficientes"
+            status_code=401, detail="Usted no tiene los permisos suficientes"
         )
     return configurator
 
