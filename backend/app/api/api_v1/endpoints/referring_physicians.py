@@ -80,7 +80,7 @@ def update_referring_physician(
         *,
         db: Session = Depends(deps.get_db),
         referring_physician_id: int,
-        physician_in: schemas.ReferringPhysicianUpdate,
+        referring_physician_in: schemas.ReferringPhysicianUpdate,
         current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.ADMIN["name"]],
@@ -96,7 +96,7 @@ def update_referring_physician(
             detail="La id ingresada no corresponde a ningún médico derivante registrado en el sistema",
         )
     try:
-        return crud.referring_physician.update(db, db_obj=physician, obj_in=physician_in)
+        return crud.referring_physician.update(db, db_obj=physician, obj_in=referring_physician_in)
     except UsernameAlreadyRegistered:
         raise HTTPException(
             status_code=400,
