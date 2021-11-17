@@ -67,14 +67,19 @@ def read_reporting_physician_by_id(
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
-    Get a specific reporting physician by id.
+    Get a specific employee by id.
     """
     reporting = crud.reporting_physician.get(db, id=reporting_id)
-    if reporting == current_user:
-        return reporting
-    if not crud.user.is_admin(current_user):
+    if not reporting:
         raise HTTPException(
-            status_code=400, detail="The current user doesn't have enough privileges"
+            status_code=404,
+            detail="El médico informante con el id ingresado no existe en el sistema",
+        )
+    if crud.user.is_admin(current_user):
+        return reporting
+    if reporting != current_user:
+        raise HTTPException(
+            status_code=401, detail="Usted no tiene los permisos suficientes"
         )
     return reporting
 

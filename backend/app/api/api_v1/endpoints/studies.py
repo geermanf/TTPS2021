@@ -71,20 +71,8 @@ async def create_study(
     """
     study = crud.study.create(
         db=db, obj_in=study_in, employee_id=current_user.id)
-    patient = study.patient
-    email = patient.email
-    ref_physician = study.referring_physician
-    with open('/app/templates/budget.html', 'r') as file:
-        file_budget = file.read().replace('\n', '')
-    replacements = {
-        'created_date': study.created_date.strftime("%m/%d/%Y"), 'patient_first_name': patient.first_name,
-        'patient_last_name': patient.last_name, 'patient_dni': patient.dni,
-        'physician_first_name': ref_physician.first_name, 'physician_last_name': ref_physician.last_name,
-        'physician_license': ref_physician.license, 'type_study': study.type_study,
-        'presumptive_diagnosis': study.presumptive_diagnosis, 'budget': study.budget,
-    }
-    body = file_budget.format(**replacements)
-    pdf = HTML(string=body, encoding='UTF-8').write_pdf()
+    email = study.patient.email
+    pdf = generate_budget_pdf(study=study)
     file = UploadFile(filename="presupuesto.pdf", file=BytesIO(pdf))
     message = MessageSchema(
         subject="mylab",
@@ -95,6 +83,49 @@ async def create_study(
     fm = FastMail(conf)
     await fm.send_message(message)
     return study
+
+
+def generate_budget_pdf(study: models.Study) -> bytes:
+    patient = study.patient
+    ref_physician = study.referring_physician
+    with open('/app/templates/budget.html', 'r') as file:
+        file_budget = file.read().replace('\n', '')
+    replacements = {
+        'created_date': study.created_date.strftime("%m/%d/%Y"), 'patient_first_name': patient.first_name,
+        'patient_last_name': patient.last_name, 'patient_dni': patient.dni,
+        'physician_first_name': ref_physician.first_name, 'physician_last_name': ref_physician.last_name,
+        'physician_license': ref_physician.license, 'type_study': study.type_study.name,
+        'presumptive_diagnosis': study.presumptive_diagnosis.name, 'budget': study.budget,
+    }
+    body = file_budget.format(**replacements)
+    pdf = HTML(string=body, encoding='UTF-8').write_pdf()
+    return pdf
+
+
+@router.get("/{id}/download-budget", response_class=Response)
+def download_budget(
+    id: int,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    study = retrieve_study(db, id)
+    pdf = generate_budget_pdf(study=study)
+    return Response(content=pdf, media_type="application/pdf")
+
+
+@router.get("/{id}/download-consent", response_class=Response)
+def download_consent(
+    id: int,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]]
+    ),
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    study = retrieve_study(db, id)
+    type_study = crud.type_study.get(db, id=study.type_study_id)
+    pdf = HTML(string=type_study.study_consent_template,
+               encoding='UTF-8').write_pdf()
+    return Response(content=pdf, media_type="application/pdf")
 
 
 @router.put("/{id}", response_model=schemas.Study)
@@ -153,20 +184,6 @@ def retrieve_study(db: Session, id: int, expected_state: Optional[str] = None) -
     raise HTTPException(
         status_code=400, detail="Acción incompatible con el estado del estudio"
     )
-
-
-@router.post("/{id}/generate-budget")
-def generate_budget(
-    id: int,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.EMPLOYEE["name"]]
-    ),
-    db: Session = Depends(deps.get_db)
-) -> Any:
-    study = retrieve_study(db, id)
-    # todo: generar pdf en base al estudio y devolverlo
-    return {"Devolver el pdf con el presupuesto."}
 
 
 @router.post("/{id}/payment-receipt/")
