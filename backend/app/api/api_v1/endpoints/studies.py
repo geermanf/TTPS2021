@@ -94,8 +94,8 @@ def generate_budget_pdf(study: models.Study) -> bytes:
         'created_date': study.created_date.strftime("%m/%d/%Y"), 'patient_first_name': patient.first_name,
         'patient_last_name': patient.last_name, 'patient_dni': patient.dni,
         'physician_first_name': ref_physician.first_name, 'physician_last_name': ref_physician.last_name,
-        'physician_license': ref_physician.license, 'type_study': study.type_study,
-        'presumptive_diagnosis': study.presumptive_diagnosis, 'budget': study.budget,
+        'physician_license': ref_physician.license, 'type_study': study.type_study.name,
+        'presumptive_diagnosis': study.presumptive_diagnosis.name, 'budget': study.budget,
     }
     body = file_budget.format(**replacements)
     pdf = HTML(string=body, encoding='UTF-8').write_pdf()
@@ -105,10 +105,6 @@ def generate_budget_pdf(study: models.Study) -> bytes:
 @router.get("/{id}/download-budget", response_class=Response)
 def download_budget(
     id: int,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.EMPLOYEE["name"]]
-    ),
     db: Session = Depends(deps.get_db)
 ) -> Any:
     study = retrieve_study(db, id)
