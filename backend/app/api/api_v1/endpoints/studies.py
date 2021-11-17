@@ -102,7 +102,7 @@ def generate_budget_pdf(study: models.Study) -> bytes:
     return pdf
 
 
-@router.post("/{id}/download-budget", response_class=Response)
+@router.get("/{id}/download-budget", response_class=Response)
 def download_budget(
     id: int,
     current_user: models.User = Security(
