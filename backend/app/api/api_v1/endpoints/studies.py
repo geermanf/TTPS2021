@@ -9,9 +9,11 @@ from app.api import deps
 from app.constants.role import Role
 from app.constants.state import StudyState
 from app.crud.exceptions import *
+from app.core.mail import conf
 from weasyprint import HTML
 from fastapi.responses import Response
-
+from fastapi_mail import FastMail, MessageSchema
+from io import BytesIO
 
 router = APIRouter()
 
@@ -30,7 +32,8 @@ def read_studies(
     Retrieve studies.
     """
     if crud.user.is_reporting_physician(current_user):
-        studies = crud.study.get_multi(db, skip=skip, limit=limit, state=StudyState.STATE_EIGHT)
+        studies = crud.study.get_multi(
+            db, skip=skip, limit=limit, state=StudyState.STATE_EIGHT)
     else:
         studies = crud.study.get_multi(db, skip=skip, limit=limit)
     return studies
@@ -54,7 +57,7 @@ def read_delayed_studies(
 
 
 @router.post("/", response_model=schemas.Study)
-def create_study(
+async def create_study(
     *,
     db: Session = Depends(deps.get_db),
     study_in: schemas.StudyCreate,
@@ -68,6 +71,29 @@ def create_study(
     """
     study = crud.study.create(
         db=db, obj_in=study_in, employee_id=current_user.id)
+    patient = study.patient
+    email = patient.email
+    ref_physician = study.referring_physician
+    with open('/app/templates/budget.html', 'r') as file:
+        file_budget = file.read().replace('\n', '')
+    replacements = {
+        'created_date': study.created_date.strftime("%m/%d/%Y"), 'patient_first_name': patient.first_name,
+        'patient_last_name': patient.last_name, 'patient_dni': patient.dni,
+        'physician_first_name': ref_physician.first_name, 'physician_last_name': ref_physician.last_name,
+        'physician_license': ref_physician.license, 'type_study': study.type_study,
+        'presumptive_diagnosis': study.presumptive_diagnosis, 'budget': study.budget,
+    }
+    body = file_budget.format(**replacements)
+    pdf = HTML(string=body, encoding='UTF-8').write_pdf()
+    file = UploadFile(filename="presupuesto.pdf", file=BytesIO(pdf))
+    message = MessageSchema(
+        subject="mylab",
+        recipients=[email],
+        body="Hola, le adjunto el presupuesto del estudio de laboratorio.",
+        attachments=[file]
+    )
+    fm = FastMail(conf)
+    await fm.send_message(message)
     return study
 
 
@@ -323,9 +349,8 @@ def add_report(
 
 
 @router.post("/{id}/send-report")
-def send_report(
+async def send_report(
     id: int,
-    email: str,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.EMPLOYEE["name"]]
@@ -333,12 +358,29 @@ def send_report(
     db: Session = Depends(deps.get_db)
 ) -> Any:
     study = retrieve_study(db, id, expected_state=StudyState.STATE_NINE)
-    referring_physician = crud.referring_physician.get_by_email(
-        db=db, email=email)
-    if not referring_physician:
-        raise HTTPException(
-            status_code=400, detail="El email no corresponde a un médico derivante registrado.")
-    # TODO: generar pdf y enviarlo al email ingresado
+    patient = study.patient
+    email = study.referring_physician.email
+    report = study.report
+    rep_physician = report.reporting_physician
+    with open('/app/templates/report.html', 'r') as file:
+        file_report = file.read().replace('\n', '')
+    replacements = {
+        'date_report': report.date_report.strftime("%m/%d/%Y"), 'patient_first_name': patient.first_name,
+        'patient_last_name': patient.last_name, 'patient_dni': patient.dni,
+        'physician_first_name': rep_physician.first_name, 'physician_last_name': rep_physician.last_name,
+        'physician_license': rep_physician.license, 'report': report.report, 'result': report.result,
+    }
+    body = file_report.format(**replacements)
+    pdf = HTML(string=body, encoding='UTF-8').write_pdf()
+    file = UploadFile(filename="informe.pdf", file=BytesIO(pdf))
+    message = MessageSchema(
+        subject="mylab",
+        recipients=[email],
+        body="Hola colega, le adjunto el informe de uno de sus pacientes.",
+        attachments=[file]
+    )
+    fm = FastMail(conf)
+    await fm.send_message(message)
     crud.study.update_state(
         db=db, db_obj=study, new_state=StudyState.STATE_ENDED,
         employee_id=current_user.id)
