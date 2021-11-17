@@ -36,6 +36,22 @@ def read_samples(
     return crud.sample.get_multi(db, paid=paid, skip=skip, limit=limit)
 
 
+@router.get("/unpaid", response_model=List[schemas.Sample])
+def read_unpaid_samples(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.EMPLOYEE["name"]],
+    )
+) -> Any:
+    """
+    Retrieve unpaid samples.
+    """
+    return crud.sample.get_multi(db, paid=False, skip=skip, limit=limit)
+
+
 @router.get("/{id}", response_model=schemas.Sample)
 def read_sample(
     *,
