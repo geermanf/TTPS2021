@@ -49,7 +49,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
             return
         username = data["username"]
         if username and username != db_obj.username:
-            user = self.get_by_username(db, username)
+            user = self.get_by_username(db, username=username)
             if user is not None:
                 raise UsernameAlreadyRegistered()
 
@@ -61,9 +61,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-
-        self._validate_update(db, db_obj, update_data)
-
+        self._validate_update(db, db_obj=db_obj, data=update_data)
         if 'password' in update_data:
             if update_data["password"]:
                 hashed_password = get_password_hash(update_data["password"])
@@ -102,6 +100,10 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType]):
 
 
 class CRUDReportingPhysician(CRUDUser[ReportingPhysician, ReportingCreate, ReportingUpdate]):
+
+    def get_by_license(self, db: Session, license: str) -> Optional[ModelType]:
+        return db.query(self.model).filter(self.model.license == license).first()
+
     def _validate_creation(self, db: Session, data: Dict[str, Any]) -> None:
         super()._validate_creation(db, data)
         existing_user = self.get_by_license(db, license=data["license"])
@@ -110,16 +112,13 @@ class CRUDReportingPhysician(CRUDUser[ReportingPhysician, ReportingCreate, Repor
 
     def _validate_update(self, db: Session, db_obj: ReportingPhysician, data: Dict[str, Any]) -> None:
         super()._validate_update(db, db_obj, data)
+        if 'license' not in data:
+            return
         license = data["license"]
         if license and license != db_obj.license:
-            try:
-                self._get_by_license(db, license=license)
+            existing_user = self.get_by_license(db, license=license)
+            if existing_user is not None:
                 raise LicenseAlreadyRegistered()
-            except UserNotExists:
-                pass
-
-    def get_by_license(self, db: Session, license: str) -> Optional[ModelType]:
-        return db.query(self.model).filter(self.model.license == license).first()
 
 
 class CRUDEmployee(CRUDUser[Employee, EmployeeCreate, EmployeeUpdate]):
